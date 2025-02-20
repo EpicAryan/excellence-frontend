@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 import tailwindcssAnimate from 'tailwindcss-animate';
 
@@ -15,11 +16,13 @@ export default {
   			foreground: 'hsl(var(--foreground))',
 			buttontag: 'hsl(var(--button-tag))',
 			gradient: {
-				100: 'hsl(var(--gradient-100))',
-				DEFAULT: 'hsl(var(--gradient-default))',
 				800: 'hsl(var(--gradient-800))',
-				700: 'hsl(var(--gradient-700))',
+				DEFAULT: 'hsl(var(--gradient-default))',
+				500: 'hsl(var(--gradient-500))',
+				100: 'hsl(var(--gradient-100))',
 			},
+			subtext: 'hsl(var(--heading-subtext))',
+			bigbutton: 'hsl(var(--big-button))',
   			card: {
   				DEFAULT: 'hsl(var(--card))',
   				foreground: 'hsl(var(--card-foreground))'
