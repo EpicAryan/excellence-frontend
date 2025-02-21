@@ -115,7 +115,7 @@ body {
   height: 100%;
   top: 0;
   transition: transform .4s ease-in-out;
-  background: linear-gradient(to right, transparent 1%, rgba(255, 0, 178, 0.1) 40%,rgba(255, 0, 178, 0.1) 60% , transparent 100%); /* Use pink rgba */
+  background: linear-gradient(to right, transparent 1%, rgba(255, 0, 178, 0.1) 40%,rgba(255, 0, 178, 0.1) 60% , transparent 100%); 
 }
 
 .custom-button-effect:hover:before {
@@ -123,23 +123,23 @@ body {
 }
 
 /* Media queries for responsive button size */
-@media (min-width: 768px) { /* Medium screens and up (sm breakpoint and above) */
+@media (min-width: 768px) { 
   .custom-button-effect {
-    font-size: 17px;
+    font-size: 16px;
     padding: 0.6em 1.4em;
   }
 }
 
-@media (min-width: 1024px) { /* Large screens and up (md breakpoint and above) */
+@media (min-width: 1024px) { 
   .custom-button-effect {
-    font-size: 18px; /* Your original font-size: 18px for larger screens */
-    padding: 0.6em 1.5em; /* Your original padding for larger screens */
+    font-size: 16px; 
+    padding: 0.6em 1.5em; 
   }
 }
 
-@media (min-width: 1280px) { /* Extra-large screens (lg breakpoint and above) */
+@media (min-width: 1280px) { 
   .custom-button-effect {
-    font-size: 19px; /* Even larger font size for very large screens if desired */
-    padding: 0.6em 1.5em; /* Slightly larger padding for very large screens if desired */
+    font-size: 16px; 
+    padding: 0.6em 1.5em; 
   }
 }

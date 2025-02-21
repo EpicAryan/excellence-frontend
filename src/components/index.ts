@@ -1,4 +1,6 @@
 import  Navbar  from '@/components/Navbar/Navbar';
-import HeroSection from './HeroSection/HeroSection';
+import HeroSection from '@/components/HeroSection/HeroSection';
+import {ArrowSvg} from '@/components/Svg/ArrowSvg';
+import About from './About/About';
 
-export { Navbar, HeroSection}
+export { Navbar, HeroSection, ArrowSvg, About}

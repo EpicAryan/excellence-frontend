@@ -8,7 +8,7 @@ import { TbLogin2 } from "react-icons/tb";
 import  { motion } from "motion/react";
 const Navbar = () => {
   return (
-    <nav className="bg-transparent py-4 px-4 md:px-10 lg:px-20">
+    <nav className="bg-transparent py-2 px-4 md:px-10 lg:px-20">
       <div className="container mx-auto flex items-center justify-between">
         <div className="flex items-center">
           <Link href="/">
@@ -24,7 +24,7 @@ const Navbar = () => {
                 alt="Logo"
                 // width={150}
                 // height={50}
-                className="w-24 sm:w-30 md:w-36 lg:w-40"
+                className="w-24 sm:w-30 md:w-36"
                 priority
               />
             </motion.div>

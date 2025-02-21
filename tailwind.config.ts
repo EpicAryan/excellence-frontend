@@ -71,6 +71,9 @@ export default {
 			title: ['Merienda', 'cursive'],
 			sans: ['Averia Serif Libre', 'serif'],
 		 },
+		 backgroundImage: {
+			'custom-oval-gradient': 'linear-gradient(90deg, #9000FF 0%, #8D6CCB 23%,#8C85BE 45%, #8C85BE 85%, #8BA0B1 100%)',
+		 }
   	}
   },
   plugins: [tailwindcssAnimate],
