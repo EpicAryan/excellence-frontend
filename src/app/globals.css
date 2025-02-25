@@ -8,7 +8,7 @@ body {
 
 @layer base {
   :root {
-    --background: 0 0 12; /* 1E1E1E */
+    --background: 180 10 6; /* 1E1E1E */
     --foreground: 0 0 100; /* FFFFFF */
     --button-tag: 261 48 61; /* 8D6CCB */
     --footer: 261 68 74; /* B091EA */

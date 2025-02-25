@@ -1,13 +1,13 @@
 'use client'
 
 import React from 'react'
-import { ArrowSvg } from '@/components'
+import { ArrowSvg, AboutGradientOne  } from '@/components'
 import Image from 'next/image'
 import hero from '../../../public/image/hero-section.png'
-import TypingText from './TypingText'
-import { OvalGradientShape, HeroGradient } from './Gradient'
-// import Icon from './Icon'
+import { OvalGradientShape, HeroGradient } from '../ui/gradient'
+import Icon from './icon'
 // import {motion} from 'motion/react'
+
 
 const HeroSection = () => {
   return (
@@ -18,18 +18,19 @@ const HeroSection = () => {
         <div className=' absolute -right-72 -top-16 -rotate-[25deg] '>
             <OvalGradientShape className='rotate-180'/>
         </div>
-        <TypingText />
         <div className='md:mt-20'>
-            <div className='flex flex-col items-center justify-center relative '>
-            {/* <Icon/> */}
-                <h1 className='font-title text-3xl md:text-5xl lg:text-7xl font-extrabold drop-shadow-[4px_0_4px_rgba(144,0,255,1)] relative z-20'> Excellence Path
-                    <span className='text-gradient-800 drop-shadow-[1px_1px_rgba(255,255,255,1)]'>शाला</span>
-                </h1>
-                <p className='text-center text-xs md:text-base mt-1 text-subtext font-light z-20'>
-                Unlock your true potential with expert guidance and personalized learning.<span className="inline"><br/></span>
-                    Build a strong foundation, master every subject, and achieve academic excellence <span className="hidden "><br/></span>
-                    with the right support
-                </p>
+            <div className='flex flex-col justify-center items-center'>
+                <div className='w-fit relative'>
+                    <Icon/>
+                    <h1 className="font-title text-center text-3xl md:text-5xl lg:text-7xl font-extrabold drop-shadow-[4px_0_4px_rgba(144,0,255,1)] z-20 "> Excellence Path
+                        <span className='text-gradient-800 drop-shadow-[1px_1px_rgba(255,255,255,1)]'>शाला</span>
+                    </h1>
+                    <p className='text-center text-xs md:text-base mt-1 text-subtext font-light z-20'>
+                    Unlock your true potential with expert guidance and personalized learning.<span className="inline"><br/></span>
+                        Build a strong foundation, master every subject, and achieve academic excellence <span className="hidden "><br/></span>
+                        with the right support
+                    </p>
+                </div>
             </div>
 
             <div className=' flex flex-col-reverse lg:flex-row container mx-auto mt-14'>
@@ -60,6 +61,7 @@ const HeroSection = () => {
                 </div>
                 
             </div>
+        <AboutGradientOne className="absolute -bottom-[19rem] -left-16 md:-left-4  lg:top-72 lg:-left-8 "/>
         </div>
     </main>
   )

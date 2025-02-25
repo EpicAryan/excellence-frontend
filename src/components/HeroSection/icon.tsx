@@ -5,22 +5,22 @@ import  cone  from '../../../public/image/3d-cone.png';
 import  cube  from '../../../public/image/3d-cube.png';
 const Icon = () => {
   return (
-    <div className='relative w-full z-10 '>
+    <div className='w-full z-10 '>
        
        <Image 
         src={hat}
         alt='hat icon'
-        className='absolute  hidden lg:inline lg:w-48 xl:w-60 lg:top-[-5rem] xl:top-[-6rem] lg:left-[2vw] xl:left-[18vw] transform translate-x-1/2'
+        className='absolute hidden md:block md:w-44 lg:w-72 left-12 bottom-8 lg:-left-32 lg:bottom-2 -z-20'
       />
       <Image 
         src={cone}
         alt='3d cone icon'
-        className='absolute hidden lg:inline w-28 top-[100] left-[30%]' 
+        className='absolute hidden md:block md:w-20 lg:w-32 left-24 top-20 lg:top-24  lg:left-10 -z-20' 
       />
       <Image 
         src={cube}
         alt='3d cube icon'
-        className='absolute hidden lg:inline w-20 top-[70] left-[25%]'
+        className='absolute hidden md:block md:w-16 lg:w-24 top-4 lg:-left-24 lg:top-24 -z-20'
       />
     </div>
   )
