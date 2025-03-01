@@ -1,11 +1,12 @@
-import { HeroSection, About } from '@/components'
+import { HeroSection, About, CourseCardSection } from '@/components'
 import React from 'react'
 
 const Home = () => {
   return (
-    <main className='px-4 lg:px-0 '>
+    <main className=' lg:px-0 '>
       <HeroSection/>
       <About/>
+      <CourseCardSection/>
     </main>
   )
 }

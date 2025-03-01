@@ -21,6 +21,7 @@ export default {
 				500: 'hsl(var(--gradient-500))',
 				100: 'hsl(var(--gradient-100))',
 			},
+			cardbg: 'hsl(var(--card-bg))',
 			footer: 'hsl(var(--footer))',
 			subtext: 'hsl(var(--heading-subtext))',
 			bigbutton: 'hsl(var(--big-button))',
@@ -75,6 +76,17 @@ export default {
 		 backgroundImage: {
 			'custom-oval-gradient': 'linear-gradient(90deg, #9000FF 0%, #8D6CCB 23%,#8C85BE 45%, #8C85BE 85%, #8BA0B1 100%)',
 		 },
+		 animation: {
+			scroll:
+			  "scroll var(--animation-duration, 40s) var(--animation-direction, forwards) linear infinite",
+		  },
+		  keyframes: {
+			scroll: {
+			  to: {
+				transform: "translate(calc(-50% - 0.5rem))",
+			  },
+			},
+		  },
 		 
   	}
   },
