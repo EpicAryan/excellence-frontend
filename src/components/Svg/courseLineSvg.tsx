@@ -3,7 +3,7 @@ import React from "react";
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 
-const CourseLineSvg = ({className}:{ className?: string;}) => {
+const CourseLineSvg = ({className}:{ className?: string}) => {
     const pathVariants = {
         initial: {
             pathLength: 0,

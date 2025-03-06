@@ -75,6 +75,10 @@ export default {
 		 },
 		 backgroundImage: {
 			'custom-oval-gradient': 'linear-gradient(90deg, #9000FF 0%, #8D6CCB 23%,#8C85BE 45%, #8C85BE 85%, #8BA0B1 100%)',
+			'morph-card': 'linear-gradient(0deg, rgba(176,145,234, 0.3) 0%,rgba(176,145,234, 0.2) 100%)',
+		 },
+		 borderImageSource: { 
+			'morph-card-line': 'linear-gradient(0deg,rgba(141,108,203,1) 0%,rgba(41,77,255,0.7) 57%, rgba(123,48,226,0.7) 100%)',
 		 },
 		 animation: {
 			scroll:

@@ -8,10 +8,13 @@ import {
     AboutGradientTwo,
     CourseHeadingGradient,
     CourseLineGradient,
+    CtaGradient
 } from "./ui/gradient";
 import CourseCardSection from "@/components/CourseCardSection/courseCardSection";
 import { InfiniteMovingCards } from "./ui/infinite-moving-cards";
 import CourseLineSvg from "./Svg/courseLineSvg";
+import CTA from "./CTA/cta";
+import MorphismCard from "./ui/morphismCard";
 
 export {
     Navbar,
@@ -26,4 +29,7 @@ export {
     CourseHeadingGradient,
     CourseLineGradient,
     CourseLineSvg,
+    CTA,
+    MorphismCard,
+    CtaGradient
 };
