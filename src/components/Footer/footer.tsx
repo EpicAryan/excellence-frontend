@@ -31,7 +31,7 @@ const Footer = () => {
                         <ul className="space-y-2 px-1">
                             <li className="group">
                                 <a
-                                    href="/home"
+                                    href="#home"
                                     className="group-hover:underline group-hover:underline-offset-2 group-hover:text-blue-800 flex items-center"
                                 >
                                     Home
@@ -39,7 +39,7 @@ const Footer = () => {
                             </li>
                             <li className="group">
                                 <a
-                                    href="/about"
+                                    href="#about"
                                     className="group-hover:underline group-hover:underline-offset-2 group-hover:text-blue-800 flex items-center"
                                 >
                                     About
@@ -47,7 +47,7 @@ const Footer = () => {
                             </li>
                             <li className="group">
                                 <a
-                                    href="/courses"
+                                    href="#courses"
                                     className="group-hover:underline group-hover:underline-offset-2 group-hover:text-blue-800 flex items-center"
                                 >
                                     Courses
@@ -55,7 +55,7 @@ const Footer = () => {
                             </li>
                             <li className="group">
                                 <a
-                                    href="/contact"
+                                    href="#contact"
                                     className="group-hover:underline group-hover:underline-offset-2 group-hover:text-blue-800 flex items-center"
                                 >
                                     Contact
@@ -137,8 +137,8 @@ const Footer = () => {
                         rights reserved.
                     </div>
                     <div className="mt-2 md:mt-0">
-                        <a href="/privacy" className="hover:underline mx-2">Privacy Policy</a> | 
-                        <a href="/terms" className="hover:underline mx-2">Terms of Service</a>
+                        <p className="hover:underline mx-2">Privacy Policy</p>  
+                        <p className="hover:underline mx-2">Terms of Service</p>
                     </div>
                 </div>
             </div>

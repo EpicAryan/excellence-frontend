@@ -30,7 +30,7 @@ const features = [
 ];
 const About = () => {
     return (
-        <div className="w-full h-full relative px-4 lg:px-0">
+        <div id="about" className="w-full h-full relative px-4 lg:px-0 lg:mt-44">
 
             <div className="w-full h-full container mx-auto ">
             

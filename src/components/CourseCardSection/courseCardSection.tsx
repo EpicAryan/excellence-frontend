@@ -44,7 +44,7 @@ const courseSections = [
 ];
 const CourseCardSection = () => {
     return (
-        <section className="w-full min-h-screen md:container md:mx-auto  mb-20">
+        <section id="courses" className="w-full min-h-screen md:container md:mx-auto  mb-20">
             <div className="relative mb-20 lg:mb-40 mt-28 lg:mt-60 px-2 lg:px-0">
                 <h1 className="font-title font-bold text-xl md:text-4xl text-center drop-shadow-[0px_3px_1px_rgba(141,108,203,1)]">
                     <span className="text-gradient-800">Unlock</span> Success

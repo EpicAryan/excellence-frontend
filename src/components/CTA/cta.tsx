@@ -10,7 +10,7 @@ import cta2 from '../../../public/image/cta-2.png';
 import cta3 from '../../../public/image/cta-3.png';
 const CTA = () => {
   return (
-    <div className='w-full h-full container mx-auto flex flex-col justify-center items-center mb-60 gap-16 md:gap-32 md:px-10 '>
+    <div id="contact" className='w-full h-full container mx-auto flex flex-col justify-center items-center mb-60 gap-16 md:gap-32 md:px-10 '>
         <div className='relative'>
             <h1 className='text-2xl md:text-3xl lg:text-4xl'>Get in Touch With Us</h1>
             <CourseLineSvg className="absolute w-56 md:w-80 lg:w-[380px] right-0 -translate-y-1/4  "/>

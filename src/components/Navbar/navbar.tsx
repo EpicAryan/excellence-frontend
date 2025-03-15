@@ -65,33 +65,27 @@ const Navbar = () => {
 
         {/* Desktop Navigation Links with Line Animation - Hidden on Mobile */}
         <div className="hidden md:flex items-center space-x-8 mr-8">
-          <Link href="/about">
+          <Link href="#home" scroll={true}>
+            <span className="nav-link relative text-white hover:text-[#B091EA] transition-colors duration-300">
+              Home
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#B091EA] transition-all duration-300 group-hover:w-full"></span>
+            </span>
+          </Link>
+          <Link href="#about" scroll={true}>
             <span className="nav-link relative text-white hover:text-[#B091EA] transition-colors duration-300">
               About
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#B091EA] transition-all duration-300 group-hover:w-full"></span>
             </span>
           </Link>
-          <Link href="/contact">
-            <span className="nav-link relative text-white hover:text-[#B091EA] transition-colors duration-300">
-              Contact
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#B091EA] transition-all duration-300 group-hover:w-full"></span>
-            </span>
-          </Link>
-          <Link href="/courses">
+          <Link href="#courses" scroll={true}>
             <span className="nav-link relative text-white hover:text-[#B091EA] transition-colors duration-300">
               Courses
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#B091EA] transition-all duration-300 group-hover:w-full"></span>
             </span>
           </Link>
-          <Link href="/travel">
+          <Link href="#contact" scroll={true}>
             <span className="nav-link relative text-white hover:text-[#B091EA] transition-colors duration-300">
-              Travel
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#B091EA] transition-all duration-300 group-hover:w-full"></span>
-            </span>
-          </Link>
-          <Link href="/destinations">
-            <span className="nav-link relative text-white hover:text-[#B091EA] transition-colors duration-300">
-              Destinations
+              Contact
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#B091EA] transition-all duration-300 group-hover:w-full"></span>
             </span>
           </Link>
