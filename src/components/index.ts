@@ -15,6 +15,7 @@ import { InfiniteMovingCards } from "./ui/infinite-moving-cards";
 import CourseLineSvg from "./Svg/courseLineSvg";
 import CTA from "./CTA/cta";
 import MorphismCard from "./ui/morphismCard";
+import Footer from "@/components/Footer/footer";
 
 export {
     Navbar,
@@ -31,5 +32,6 @@ export {
     CourseLineSvg,
     CTA,
     MorphismCard,
-    CtaGradient
+    CtaGradient,
+    Footer
 };

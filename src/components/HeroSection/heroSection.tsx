@@ -11,7 +11,7 @@ import Icon from './icon'
 
 const HeroSection = () => {
   return (
-    <main className='relative w-full h-full px-4 lg:px-0'>
+    <main className='relative w-full h-full px-4 lg:px-0 pt-28'>
         <div className=' absolute -left-72 -top-16 rotate-[25deg]'>
             <OvalGradientShape className=''/>
         </div>

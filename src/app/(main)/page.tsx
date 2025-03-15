@@ -1,4 +1,4 @@
-import { HeroSection, About, CourseCardSection, CTA } from '@/components'
+import { HeroSection, About, CourseCardSection, CTA, Footer } from '@/components'
 import React from 'react'
 
 const Home = () => {
@@ -8,6 +8,7 @@ const Home = () => {
       <About/>
       <CourseCardSection/>
       <CTA/>
+      <Footer/>
     </main>
   )
 }
