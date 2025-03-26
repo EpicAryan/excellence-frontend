@@ -14,17 +14,17 @@ export default {
   		colors: {
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
-			buttontag: 'hsl(var(--button-tag))',
-			gradient: {
-				800: 'hsl(var(--gradient-800))',
-				DEFAULT: 'hsl(var(--gradient-default))',
-				500: 'hsl(var(--gradient-500))',
-				100: 'hsl(var(--gradient-100))',
-			},
-			cardbg: 'hsl(var(--card-bg))',
-			footer: 'hsl(var(--footer))',
-			subtext: 'hsl(var(--heading-subtext))',
-			bigbutton: 'hsl(var(--big-button))',
+  			buttontag: 'hsl(var(--button-tag))',
+  			gradient: {
+  				'100': 'hsl(var(--gradient-100))',
+  				'500': 'hsl(var(--gradient-500))',
+  				'800': 'hsl(var(--gradient-800))',
+  				DEFAULT: 'hsl(var(--gradient-default))'
+  			},
+  			cardbg: 'hsl(var(--card-bg))',
+  			footer: 'hsl(var(--footer))',
+  			subtext: 'hsl(var(--heading-subtext))',
+  			bigbutton: 'hsl(var(--big-button))',
   			card: {
   				DEFAULT: 'hsl(var(--card))',
   				foreground: 'hsl(var(--card-foreground))'
@@ -62,6 +62,16 @@ export default {
   				'3': 'hsl(var(--chart-3))',
   				'4': 'hsl(var(--chart-4))',
   				'5': 'hsl(var(--chart-5))'
+  			},
+  			sidebar: {
+  				DEFAULT: 'hsl(var(--sidebar-background))',
+  				foreground: 'hsl(var(--sidebar-foreground))',
+  				primary: 'hsl(var(--sidebar-primary))',
+  				'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
+  				accent: 'hsl(var(--sidebar-accent))',
+  				'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
+  				border: 'hsl(var(--sidebar-border))',
+  				ring: 'hsl(var(--sidebar-ring))'
   			}
   		},
   		borderRadius: {
@@ -69,29 +79,33 @@ export default {
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
   		},
-		  fontFamily: {
-			title: ['Merienda', 'cursive'],
-			sans: ['Averia Serif Libre', 'serif'],
-		 },
-		 backgroundImage: {
-			'custom-oval-gradient': 'linear-gradient(90deg, #9000FF 0%, #8D6CCB 23%,#8C85BE 45%, #8C85BE 85%, #8BA0B1 100%)',
-			'morph-card': 'linear-gradient(0deg, rgba(176,145,234, 0.3) 0%,rgba(176,145,234, 0.2) 100%)',
-		 },
-		 borderImageSource: { 
-			'morph-card-line': 'linear-gradient(0deg,rgba(141,108,203,1) 0%,rgba(41,77,255,0.7) 57%, rgba(123,48,226,0.7) 100%)',
-		 },
-		 animation: {
-			scroll:
-			  "scroll var(--animation-duration, 40s) var(--animation-direction, forwards) linear infinite",
-		  },
-		  keyframes: {
-			scroll: {
-			  to: {
-				transform: "translate(calc(-50% - 0.5rem))",
-			  },
-			},
-		  },
-		 
+  		fontFamily: {
+  			title: [
+  				'Merienda',
+  				'cursive'
+  			],
+  			sans: [
+  				'Averia Serif Libre',
+  				'serif'
+  			]
+  		},
+  		backgroundImage: {
+  			'custom-oval-gradient': 'linear-gradient(90deg, #9000FF 0%, #8D6CCB 23%,#8C85BE 45%, #8C85BE 85%, #8BA0B1 100%)',
+  			'morph-card': 'linear-gradient(0deg, rgba(176,145,234, 0.3) 0%,rgba(176,145,234, 0.2) 100%)'
+  		},
+  		borderImageSource: {
+  			'morph-card-line': 'linear-gradient(0deg,rgba(141,108,203,1) 0%,rgba(41,77,255,0.7) 57%, rgba(123,48,226,0.7) 100%)'
+  		},
+  		animation: {
+  			scroll: 'scroll var(--animation-duration, 40s) var(--animation-direction, forwards) linear infinite'
+  		},
+  		keyframes: {
+  			scroll: {
+  				to: {
+  					transform: 'translate(calc(-50% - 0.5rem))'
+  				}
+  			}
+  		}
   	}
   },
   plugins: [tailwindcssAnimate],

@@ -16,6 +16,10 @@ import CourseLineSvg from "./Svg/courseLineSvg";
 import CTA from "./CTA/cta";
 import MorphismCard from "./ui/morphismCard";
 import Footer from "@/components/Footer/footer";
+import AppSidebar from "./Navbar/sidebar";
+import CourseSection from "./CourseSection/courseSection";
+import TopicDialog from "./CourseSection/topicDialog";
+
 
 export {
     Navbar,
@@ -33,5 +37,8 @@ export {
     CTA,
     MorphismCard,
     CtaGradient,
-    Footer
+    Footer,
+    AppSidebar,
+    CourseSection,
+    TopicDialog
 };
