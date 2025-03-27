@@ -19,6 +19,8 @@ import Footer from "@/components/Footer/footer";
 import AppSidebar from "./Navbar/sidebar";
 import CourseSection from "./CourseSection/courseSection";
 import TopicDialog from "./CourseSection/topicDialog";
+import AdminSidebar from "./Navbar/adminSidebar";
+import NotesUploadWorkflow from "./NotesUploadWorkflow/notesUploadWorkflow";
 
 
 export {
@@ -40,5 +42,7 @@ export {
     Footer,
     AppSidebar,
     CourseSection,
-    TopicDialog
+    TopicDialog,
+    AdminSidebar,
+    NotesUploadWorkflow
 };
