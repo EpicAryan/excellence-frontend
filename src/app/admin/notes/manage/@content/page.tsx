@@ -8,8 +8,30 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Edit, Trash2, Eye, Filter, Search, FileText } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
+
+interface Topic {
+  id: string;
+  name: string;
+  boardId: string;
+  board: string;
+  classId: string;
+  class: string;
+  subjectId: string;
+  subject: string;
+  chapter: string;
+  pdfUrl: string;
+  uploadedAt: string;
+}
+
+interface FilterOption {
+  id: string;
+  name: string;
+  boardId?: string;
+  classId?: string;
+}
+
 // Sample data - replace with actual API data
-const initialTopics = [
+const initialTopics: Topic[] = [
   { 
     id: '1', 
     name: 'Algebraic Expressions', 
@@ -52,26 +74,26 @@ const initialTopics = [
 ];
 
 // Sample board, class, subject data (normally would come from API)
-const BOARDS = [
+const BOARDS: FilterOption[] = [
   { id: '1', name: 'CBSE' },
   { id: '2', name: 'ICSE' },
   { id: '3', name: 'WB' },
 ];
 
-const CLASSES = [
+const CLASSES: FilterOption[] = [
   { id: '3', name: '10', boardId: '1' },
   { id: '4', name: '11', boardId: '2' },
 ];
 
-const SUBJECTS = [
+const SUBJECTS: FilterOption[] = [
   { id: '1', name: 'Mathematics', classId: '3' },
   { id: '2', name: 'Science', classId: '3' },
   { id: '3', name: 'English', classId: '4' },
 ];
 
 export default function ContentManagement() {
-  const [topics, setTopics] = useState(initialTopics);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [topics, setTopics] = useState<Topic[]>(initialTopics);
+  const [searchTerm, setSearchTerm] = useState<string>('');
   
   // Filter states
   const [filterBoard, setFilterBoard] = useState<string>('');
@@ -79,11 +101,11 @@ export default function ContentManagement() {
   const [filterSubject, setFilterSubject] = useState<string>('');
   
   // Dialog states
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [selectedTopic, setSelectedTopic] = useState<any>(null);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [editedTopic, setEditedTopic] = useState<any>(null);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+  const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState<boolean>(false);
+  const [editedTopic, setEditedTopic] = useState<Topic | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
   const [topicToDelete, setTopicToDelete] = useState<string | null>(null);
   
   // Filter classes based on selected board
@@ -110,13 +132,13 @@ export default function ContentManagement() {
   });
   
   // Handle view topic
-  const handleViewTopic = (topic: any) => {
+  const handleViewTopic = (topic: Topic) => {
     setSelectedTopic(topic);
     setIsDialogOpen(true);
   };
   
   // Handle edit topic
-  const handleEditTopic = (topic: any) => {
+  const handleEditTopic = (topic: Topic) => {
     setEditedTopic({...topic});
     setIsEditDialogOpen(true);
   };
