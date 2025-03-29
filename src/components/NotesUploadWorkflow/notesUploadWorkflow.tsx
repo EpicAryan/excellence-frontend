@@ -27,6 +27,7 @@ const NotesUploadDashboard = () => {
   const [selectedSubject, setSelectedSubject] = useState<string>('');
   const [customSubject, setCustomSubject] = useState<string>('');
   const [selectedChapter, setSelectedChapter] = useState<string>('');
+  const [customChapter, setCustomChapter] = useState<string>('');
   const [topicName, setTopicName] = useState<string>('');
   const [file, setFile] = useState<File | null>(null);
 
@@ -46,6 +47,14 @@ const NotesUploadDashboard = () => {
     }
   };
 
+  const handleChapterSubmit = () => {
+    const chapterValue = selectedChapter || customChapter;
+    if (chapterValue) {
+      console.log('Class Selected:', chapterValue);
+      // Additional logic for class submission
+    }
+  };
+  
   const handleFinalSubmit = () => {
     const board = selectedBoard || customBoard;
     const classValue = selectedClass || customClass;
@@ -70,10 +79,9 @@ const NotesUploadDashboard = () => {
   };
 
   return (
-    <div className="container mx-auto min-h-screen p-8">
-      <Card className="w-full bg-[#1E1E1E] border-[#8D6CCB]/20 shadow-lg">
+      <Card className="w-full bg-[#1E1E1E] border-none">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold text-white">Notes Upload Dashboard</CardTitle>
+          <CardTitle className="text-3xl font-bold text-white">Notes Upload Dashboard</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Section 1: Board Selection */}
@@ -175,6 +183,66 @@ const NotesUploadDashboard = () => {
                 className="bg-gradient-to-r from-[#8D6CCB] to-[#9000FF] hover:from-[#9000FF] hover:to-[#8D6CCB] text-white"
               >
                 Submit Class
+              </Button>
+            </div>
+          </div>
+
+          
+           {/* Section 2: Chapter Selection */}
+           <div className="p-4 rounded-lg border border-[#6544A3]/30 bg-[#1E1E1E]">
+            <h2 className="text-lg font-semibold mb-4 text-white">3. Select Chapter</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Select 
+                value={selectedSubject} 
+                onValueChange={setSelectedSubject}
+              >
+                <SelectTrigger className="bg-[#3B444B]/50 text-white border-[#6544A3]">
+                  <SelectValue placeholder="Select Predefined Subject" />
+                </SelectTrigger>
+                <SelectContent className="bg-[#1E1E1E] text-white border-[#6544A3]">
+                  {SUBJECTS.map((subjectNum) => (
+                    <SelectItem 
+                      key={subjectNum} 
+                      value={subjectNum}
+                      className="hover:bg-[#6544A3] focus:bg-[#6544A3]"
+                    >
+                      {subjectNum}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+             
+              <Select 
+                value={selectedChapter} 
+                onValueChange={setSelectedChapter}
+              >
+                <SelectTrigger className="bg-[#3B444B]/50 text-white border-[#6544A3]">
+                  <SelectValue placeholder="Select Predefined Chapters" />
+                </SelectTrigger>
+                <SelectContent className="bg-[#1E1E1E] text-white border-[#6544A3]">
+                  {CHAPTERS.map((chapter) => (
+                    <SelectItem 
+                      key={chapter} 
+                      value={chapter}
+                      className="hover:bg-[#6544A3] focus:bg-[#6544A3]"
+                    >
+                      {chapter}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Input 
+                placeholder="Or Enter Custom Chapter"
+                value={customChapter}
+                onChange={(e) => setCustomChapter(e.target.value)}
+                className="bg-[#3B444B]/50 border-[#6544A3] text-white placeholder:text-gray-400"
+              />
+              <Button 
+                onClick={handleChapterSubmit} 
+                disabled={!selectedChapter && !customChapter}
+                className="bg-gradient-to-r from-[#8D6CCB] to-[#9000FF] hover:from-[#9000FF] hover:to-[#8D6CCB] text-white"
+              >
+                Submit Chapter
               </Button>
             </div>
           </div>
@@ -285,7 +353,6 @@ const NotesUploadDashboard = () => {
           </div>
         </CardContent>
       </Card>
-    </div>
   );
 };
 
