@@ -21,7 +21,9 @@ import CourseSection from "./CourseSection/courseSection";
 import TopicDialog from "./CourseSection/topicDialog";
 import AdminSidebar from "./Navbar/adminSidebar";
 import NotesUploadWorkflow from "./NotesUploadWorkflow/notesUploadWorkflow";
-
+import  RegisterForm  from "./Students/registerForm";
+import StudentTable from "./Students/studentTable";
+import SearchSection from "./Students/searchSection";
 
 export {
     Navbar,
@@ -44,5 +46,8 @@ export {
     CourseSection,
     TopicDialog,
     AdminSidebar,
-    NotesUploadWorkflow
+    NotesUploadWorkflow,
+    RegisterForm,
+    StudentTable,
+    SearchSection
 };

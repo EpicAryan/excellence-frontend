@@ -11,7 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import FileUpload from './fileUpload';
-
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 
 // Predefined options (these would typically come from an API or configuration)
 const BOARDS = ['WB', 'CBSE', 'ICSE'];
@@ -46,14 +46,6 @@ const NotesUploadDashboard = () => {
     }
   };
 
-  // const handleSubjectSubmit = () => {
-  //   const subject = selectedSubject || customSubject;
-  //   if (subject) {
-  //     console.log('Subject Selected:', subject);
-  //     // Additional logic for subject submission
-  //   }
-  // };
-
   const handleFinalSubmit = () => {
     const board = selectedBoard || customBoard;
     const classValue = selectedClass || customClass;
@@ -77,32 +69,30 @@ const NotesUploadDashboard = () => {
     setFile(selectedFile);
   };
 
-  
   return (
-    <div 
-      className="container mx-auto full min-h-screen p-8" 
-    >
-      <div className="max-w-full w-full space-y-6">
-        <div className="bg-[#1E1E1E] p-6 rounded-lg shadow-lg">
-          <h1 className="text-2xl font-bold mb-6 text-white">Notes Upload Dashboard</h1>
-
+    <div className="container mx-auto min-h-screen p-8">
+      <Card className="w-full bg-[#1E1E1E] border-[#8D6CCB]/20 shadow-lg">
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold text-white">Notes Upload Dashboard</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
           {/* Section 1: Board Selection */}
-          <div className="p-4 rounded-lg mb-6">
+          <div className="p-4 rounded-lg border border-[#6544A3]/30 bg-[#1E1E1E]">
             <h2 className="text-lg font-semibold mb-4 text-white">1. Select Board</h2>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Select 
                 value={selectedBoard} 
                 onValueChange={setSelectedBoard}
               >
-                <SelectTrigger className="bg-[#4A4A4A] text-white border-none ">
+                <SelectTrigger className="bg-[#3B444B]/50 text-white border-[#6544A3]">
                   <SelectValue placeholder="Select Predefined Board" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#3A3A3A] text-white border-none">
+                <SelectContent className="bg-[#1E1E1E] text-white border-[#6544A3]">
                   {BOARDS.map((board) => (
                     <SelectItem 
                       key={board} 
                       value={board}
-                      className="hover:bg-[#4A4A4A] focus:bg-[#4A4A4A] focus:text-gray-900 "
+                      className="hover:bg-[#6544A3] focus:bg-[#6544A3]"
                     >
                       {board}
                     </SelectItem>
@@ -113,12 +103,12 @@ const NotesUploadDashboard = () => {
                 placeholder="Or Enter Custom Board"
                 value={customBoard}
                 onChange={(e) => setCustomBoard(e.target.value)}
-                className="bg-[#4A4A4A] text-white border-none"
+                className="bg-[#3B444B]/50 border-[#6544A3] text-white placeholder:text-gray-400"
               />
               <Button 
                 onClick={handleBoardSubmit} 
                 disabled={!selectedBoard && !customBoard}
-                className="bg-buttontag hover:bg-gradient-800"
+                className="bg-gradient-to-r from-[#8D6CCB] to-[#9000FF] hover:from-[#9000FF] hover:to-[#8D6CCB] text-white"
               >
                 Submit Board
               </Button>
@@ -126,22 +116,22 @@ const NotesUploadDashboard = () => {
           </div>
 
           {/* Section 2: Class Selection */}
-          <div className="bg-[#1E1E1E] p-4 rounded-lg mb-6">
+          <div className="p-4 rounded-lg border border-[#6544A3]/30 bg-[#1E1E1E]">
             <h2 className="text-lg font-semibold mb-4 text-white">2. Select Class</h2>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Select 
                 value={selectedClass} 
                 onValueChange={setSelectedClass}
               >
-                <SelectTrigger className="bg-[#4A4A4A] text-white border-none">
+                <SelectTrigger className="bg-[#3B444B]/50 text-white border-[#6544A3]">
                   <SelectValue placeholder="Select Predefined Class" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#3A3A3A] text-white border-none">
+                <SelectContent className="bg-[#1E1E1E] text-white border-[#6544A3]">
                   {CLASSES.map((classNum) => (
                     <SelectItem 
                       key={classNum} 
                       value={classNum}
-                      className="hover:bg-[#4A4A4A] focus:bg-[#4A4A4A] focus:text-gray-900"
+                      className="hover:bg-[#6544A3] focus:bg-[#6544A3]"
                     >
                       {classNum}
                     </SelectItem>
@@ -152,21 +142,21 @@ const NotesUploadDashboard = () => {
                 placeholder="Or Enter Custom Class"
                 value={customClass}
                 onChange={(e) => setCustomClass(e.target.value)}
-                className="bg-[#4A4A4A] text-white border-none"
+                className="bg-[#3B444B]/50 border-[#6544A3] text-white placeholder:text-gray-400"
               />
               <Select 
                 value={selectedSubject} 
                 onValueChange={setSelectedSubject}
               >
-                <SelectTrigger className="bg-[#4A4A4A] text-white border-none">
+                <SelectTrigger className="bg-[#3B444B]/50 text-white border-[#6544A3]">
                   <SelectValue placeholder="Select Predefined Subject" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#3A3A3A] text-white border-none">
+                <SelectContent className="bg-[#1E1E1E] text-white border-[#6544A3]">
                   {SUBJECTS.map((subject) => (
                     <SelectItem 
                       key={subject} 
                       value={subject}
-                      className="hover:bg-[#4A4A4A] focus:bg-[#4A4A4A] focus:text-gray-900"
+                      className="hover:bg-[#6544A3] focus:bg-[#6544A3]"
                     >
                       {subject}
                     </SelectItem>
@@ -177,12 +167,12 @@ const NotesUploadDashboard = () => {
                 placeholder="Or Enter Custom Subject"
                 value={customSubject}
                 onChange={(e) => setCustomSubject(e.target.value)}
-                className="bg-[#4A4A4A] text-white border-none"
+                className="bg-[#3B444B]/50 border-[#6544A3] text-white placeholder:text-gray-400"
               />
               <Button 
                 onClick={handleClassSubmit} 
                 disabled={!selectedClass && !customClass}
-                className="bg-buttontag hover:bg-gradient-800"
+                className="bg-gradient-to-r from-[#8D6CCB] to-[#9000FF] hover:from-[#9000FF] hover:to-[#8D6CCB] text-white"
               >
                 Submit Class
               </Button>
@@ -190,100 +180,82 @@ const NotesUploadDashboard = () => {
           </div>
 
           {/* Final Upload Section */}
-          <div className="bg-[#1E1E1E] p-4 rounded-lg">
+          <div className="p-4 rounded-lg border border-[#6544A3]/30 bg-[#1E1E1E]">
             <h2 className="text-lg font-semibold mb-4 text-white">3. Final Upload</h2>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Select 
                 value={selectedBoard || customBoard ? (selectedBoard || customBoard) : ''} 
                 onValueChange={setSelectedBoard}
               >
-                <SelectTrigger className="bg-[#4A4A4A] text-white border-none">
+                <SelectTrigger className="bg-[#3B444B]/50 text-white border-[#6544A3]">
                   <SelectValue placeholder="Select Board" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#3A3A3A] text-white border-none">
+                <SelectContent className="bg-[#1E1E1E] text-white border-[#6544A3]">
                   {BOARDS.map((board) => (
                     <SelectItem 
                       key={board} 
                       value={board}
-                      className="hover:bg-[#4A4A4A] focus:bg-[#4A4A4A] focus:text-gray-900"
+                      className="hover:bg-[#6544A3] focus:bg-[#6544A3]"
                     >
                       {board}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              {/* <Input 
-                placeholder="Or Enter Custom Board"
-                value={customBoard}
-                onChange={(e) => setCustomBoard(e.target.value)}
-                className="bg-[#4A4A4A] text-white border-none"
-              /> */}
 
               <Select 
                 value={selectedClass || customClass ? (selectedClass || customClass) : ''} 
                 onValueChange={setSelectedClass}
               >
-                <SelectTrigger className="bg-[#4A4A4A] text-white border-none">
+                <SelectTrigger className="bg-[#3B444B]/50 text-white border-[#6544A3]">
                   <SelectValue placeholder="Select Class" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#3A3A3A] text-white border-none">
+                <SelectContent className="bg-[#1E1E1E] text-white border-[#6544A3]">
                   {CLASSES.map((classNum) => (
                     <SelectItem 
                       key={classNum} 
                       value={classNum}
-                      className="hover:bg-[#4A4A4A] focus:bg-[#4A4A4A] focus:text-gray-900"
+                      className="hover:bg-[#6544A3] focus:bg-[#6544A3]"
                     >
                       {classNum}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              {/* <Input 
-                placeholder="Or Enter Custom Class"
-                value={customClass}
-                onChange={(e) => setCustomClass(e.target.value)}
-                className="bg-[#4A4A4A] text-white border-none"
-              /> */}
 
               <Select 
                 value={selectedSubject || customSubject ? (selectedSubject || customSubject) : ''} 
                 onValueChange={setSelectedSubject}
               >
-                <SelectTrigger className="bg-[#4A4A4A] text-white border-none">
+                <SelectTrigger className="bg-[#3B444B]/50 text-white border-[#6544A3]">
                   <SelectValue placeholder="Select Subject" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#3A3A3A] text-white border-none">
+                <SelectContent className="bg-[#1E1E1E] text-white border-[#6544A3]">
                   {SUBJECTS.map((subject) => (
                     <SelectItem 
                       key={subject} 
                       value={subject}
-                      className="hover:bg-[#4A4A4A] focus:bg-[#4A4A4A] focus:text-gray-900"
+                      className="hover:bg-[#6544A3] focus:bg-[#6544A3]"
                     >
                       {subject}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              {/* <Input 
-                placeholder="Or Enter Custom Subject"
-                value={customSubject}
-                onChange={(e) => setCustomSubject(e.target.value)}
-                className="bg-[#4A4A4A] text-white border-none"
-              /> */}
 
               <Select 
                 value={selectedChapter} 
                 onValueChange={setSelectedChapter}
               >
-                <SelectTrigger className="bg-[#4A4A4A] text-white border-none">
+                <SelectTrigger className="bg-[#3B444B]/50 text-white border-[#6544A3]">
                   <SelectValue placeholder="Select Chapter" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#3A3A3A] text-white border-none">
+                <SelectContent className="bg-[#1E1E1E] text-white border-[#6544A3]">
                   {CHAPTERS.map((chapter) => (
                     <SelectItem 
                       key={chapter} 
                       value={chapter}
-                      className="hover:bg-[#4A4A4A] focus:bg-[#4A4A4A] focus:text-gray-900"
+                      className="hover:bg-[#6544A3] focus:bg-[#6544A3]"
                     >
                       {chapter}
                     </SelectItem>
@@ -295,28 +267,24 @@ const NotesUploadDashboard = () => {
                 placeholder="Enter Topic Name"
                 value={topicName}
                 onChange={(e) => setTopicName(e.target.value)}
-                className="bg-[#4A4A4A] text-white border-none"
+                className="bg-[#3B444B]/50 border-[#6544A3] text-white placeholder:text-gray-400"
               />
 
-              {/* <Input 
-                type="file" 
-                accept=".pdf"
-                onChange={handleFileChange}
-                className="bg-[#4A4A4A] text-white border-none file:text-white file:bg-blue-600 file:border-none"
-              /> */}
-              <FileUpload handleFileChange={handleFileChange}/>
+              <div className="col-span-1 md:col-span-2">
+                <FileUpload handleFileChange={handleFileChange}/>
+              </div>
 
               <Button 
                 onClick={handleFinalSubmit} 
                 disabled={!selectedBoard && !customBoard || !selectedClass && !customClass || !selectedSubject && !customSubject || !file}
-                className="col-span-2 bg-gradient-500 hover:bg-gradient-800"
+                className="col-span-1 md:col-span-2 bg-gradient-to-r from-[#8D6CCB] to-[#9000FF] hover:from-[#9000FF] hover:to-[#8D6CCB] text-white h-10"
               >
                 Upload Notes
               </Button>
             </div>
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };

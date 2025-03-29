@@ -1,9 +1,7 @@
-import React from 'react'
 
-const page = () => {
-  return (
-    <div>page</div>
-  )
+
+const StudentRegistrationPage = () => {
+  return null;
 }
 
-export default page
+export default StudentRegistrationPage

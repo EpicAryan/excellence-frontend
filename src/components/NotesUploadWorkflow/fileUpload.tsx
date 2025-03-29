@@ -1,5 +1,8 @@
+'use client'
+
 import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
+import { Upload } from "lucide-react";
 
 const FileUpload = ({ handleFileChange }: { handleFileChange: (file: File) => void }) => {
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -17,15 +20,27 @@ const FileUpload = ({ handleFileChange }: { handleFileChange: (file: File) => vo
   return (
     <div
       {...getRootProps()}
-      className={`border-2 border-dashed rounded-md p-4 text-center cursor-pointer transition 
-      ${isDragActive ? "border-blue-500 bg-blue-100" : "border-gray-500 bg-[#4A4A4A] text-lime-400"}`}
+      className={`
+        w-full h-24 border-2 border-dashed rounded-md flex flex-col items-center justify-center cursor-pointer
+        ${isDragActive 
+          ? 'border-[#9000FF] bg-[#6544A3]/20' 
+          : 'border-[#6544A3] bg-[#3B444B]/30'
+        }
+        hover:border-[#9000FF] hover:bg-[#6544A3]/10 transition-colors
+      `}
     >
       <input {...getInputProps()} />
-      {isDragActive ? (
-        <p className="text-blue-500">Drop the PDF here...</p>
-      ) : (
-        <p>Drag & Drop a PDF here or click to browse</p>
-      )}
+      <Upload 
+        size={20} 
+        className={`${isDragActive ? 'text-[#9000FF]' : 'text-[#8D6CCB]'} mb-2`} 
+      />
+      <p className={`text-sm ${isDragActive ? 'text-[#B091EA]' : 'text-gray-400'}`}>
+        {isDragActive ? (
+          "Drop the PDF here..."
+        ) : (
+          "Drag & Drop a PDF here or click to browse"
+        )}
+      </p>
     </div>
   );
 };
