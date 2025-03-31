@@ -24,6 +24,7 @@ import NotesUploadWorkflow from "./NotesUploadWorkflow/notesUploadWorkflow";
 import  RegisterForm  from "./Students/registerForm";
 import StudentTable from "./Students/studentTable";
 import SearchSection from "./Students/searchSection";
+import LoginForm from "./LoginForm/loginForm";
 
 export {
     Navbar,
@@ -49,5 +50,6 @@ export {
     NotesUploadWorkflow,
     RegisterForm,
     StudentTable,
-    SearchSection
+    SearchSection,
+    LoginForm
 };

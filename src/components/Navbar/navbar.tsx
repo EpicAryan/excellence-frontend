@@ -18,7 +18,6 @@ const Navbar = () => {
     const handleScroll = () => {
       const currentScrollPos = window.scrollY;
       
-      // Set scrolled state for background change
       setScrolled(currentScrollPos > 10);
       
       // Hide navbar immediately when scrolling down, show when scrolling up
@@ -93,7 +92,7 @@ const Navbar = () => {
 
         {/* Sign In Button */}
         <div>
-          <Link href="/signin"> 
+          <Link href="/auth/login"> 
             <button className="custom-button-effect flex gap-2 items-center">
               <TbLogin2 className='text-xl md:text-2xl'/>Sign In
             </button>
