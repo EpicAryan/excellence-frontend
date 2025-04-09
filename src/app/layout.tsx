@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Merienda, Averia_Serif_Libre } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "@/components/ui/sonner"
+import Providers from './providers'
+
 
 const merienda = Merienda({
   subsets: ['latin'],
@@ -29,7 +32,10 @@ export default function RootLayout({
       <body
         className={averia.className}
       >
-        {children}
+        <Providers>
+                    {children}
+                    <Toaster />
+                </Providers>
       </body>
     </html>
   );

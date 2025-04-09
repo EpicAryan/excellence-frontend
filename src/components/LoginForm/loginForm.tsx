@@ -1,7 +1,11 @@
 'use client'
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
+import { useMutation } from '@tanstack/react-query'
+import { useRouter } from 'next/navigation'
+import { loginAction, getUserRoleFromToken } from '@/app/actions/auth'
+import { toast } from "sonner";
 
 
 interface LoginFormInputs {
@@ -21,20 +25,43 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
     formState: { errors } 
   } = useForm<LoginFormInputs>();
   
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
-    setIsLoading(true);
-    try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      console.log('Form submitted:', data);
-      if (onSuccess) onSuccess(data);
-    } catch (error) {
-      if (onError) onError(error);
-    } finally {
-      setIsLoading(false);
+  const router = useRouter()
+  
+  const loginMutation = useMutation({
+    mutationFn: async (data: LoginFormInputs) => {
+      return await loginAction(data)
+    },
+    onSuccess: async (response, variables) => {
+      if (response.success && response.accessToken) {
+        // Get user role from the token
+        const role = await getUserRoleFromToken(response.accessToken)
+        console.log("User role: ", role);
+        toast.success("Login successful!");
+        // Redirect based on role
+        if (role === 'admin') {
+          router.push('/admin')
+        } else {
+          router.push('/courses')
+        }
+        
+        if (onSuccess) onSuccess(variables)
+      } else {
+        throw new Error(response.message || 'Login failed')
+      }
+    },
+    onError: (error) => {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Login failed. Please try again."
+      );
+      if (onError) onError(error)
     }
-  };
+  })
+
+  const onSubmit: SubmitHandler<LoginFormInputs> = (data) => {
+    loginMutation.mutate(data)
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
@@ -86,13 +113,20 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
         )}
       </div>
 
+      {loginMutation.error ? (
+        <p className="text-red-400 text-sm">
+          {loginMutation.error instanceof Error 
+            ? loginMutation.error.message 
+            : "Login failed. Please try again."}
+        </p>
+      ) : null}
 
       <button
         type="submit"
-        disabled={isLoading}
+        disabled={loginMutation.isPending}
         className="w-full py-3 bg-[#8D6CCB] hover:bg-[#9000FF] text-white font-semibold rounded-lg transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0.5 flex justify-center"
       >
-        {isLoading ? (
+        {loginMutation.isPending  ? (
           <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>

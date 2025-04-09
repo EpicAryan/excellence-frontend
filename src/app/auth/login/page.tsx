@@ -37,7 +37,7 @@ const LoginPage: React.FC = () => {
         <div className="px-8 py-10">
           <div className="text-center mb-8">
             <h1 className="font-title text-3xl font-bold text-white tracking-tight text-gradient-500">Excellence Pathशाला</h1>
-            <p className="text-sm text-[#A3A3A3] mt-1">Your tagline here</p>
+            <p className="text-sm text-[#A3A3A3] mt-1">Where Potential Meets Performance</p>
           </div>
 
           <h2 className="text-xl font-semibold text-white text-center mb-6">Sign in to your account</h2>
