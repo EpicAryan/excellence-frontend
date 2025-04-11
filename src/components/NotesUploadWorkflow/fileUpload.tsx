@@ -6,15 +6,17 @@ import { Upload } from "lucide-react";
 
 const FileUpload = ({ handleFileChange }: { handleFileChange: (file: File) => void }) => {
   const onDrop = useCallback((acceptedFiles: File[]) => {
-    if (acceptedFiles.length > 0) {
-      handleFileChange(acceptedFiles[0]); // Pass the first selected file
-    }
+    const file = acceptedFiles[0];
+      if (file.type === 'application/pdf') {
+        handleFileChange(file);
+      }
   }, [handleFileChange]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: { "application/pdf": [".pdf"] }, // Restrict to PDFs
     multiple: false, // Allow only one file
+    maxSize: 25 * 1024 * 1024, // 25MB
   });
 
   return (
@@ -34,13 +36,14 @@ const FileUpload = ({ handleFileChange }: { handleFileChange: (file: File) => vo
         size={20} 
         className={`${isDragActive ? 'text-[#9000FF]' : 'text-[#8D6CCB]'} mb-2`} 
       />
-      <p className={`text-sm ${isDragActive ? 'text-[#B091EA]' : 'text-gray-400'}`}>
+      <p className={`text-sm ${isDragActive ? 'text-[#B091EA]' : 'text-gray-400'} text-center px-4`}>
         {isDragActive ? (
           "Drop the PDF here..."
         ) : (
           "Drag & Drop a PDF here or click to browse"
         )}
       </p>
+      <p className="text-xs text-gray-500 mt-1">Max size: 25MB</p>
     </div>
   );
 };

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Select, 
   SelectContent, 
@@ -10,349 +10,396 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import FileUpload from './fileUpload';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { Loader2 } from 'lucide-react';
+import {
+  BoardType,
+  ClassType,
+  SubjectType,
+  ChapterType
+} from '@/types/notes'
+// Import server actions
+import { 
+  fetchBoards, 
+  fetchClasses, 
+  fetchSubjects, 
+  fetchChapters, 
+  uploadNotes 
+} from '@/app/actions/notes';
+import { toast } from 'sonner';
 
-// Predefined options (these would typically come from an API or configuration)
-const BOARDS = ['WB', 'CBSE', 'ICSE'];
-const CLASSES = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
-const SUBJECTS = ['Mathematics', 'Science', 'English', 'History', 'Geography'];
-const CHAPTERS = ['Chapter 1', 'Chapter 2', 'Chapter 3', 'Chapter 4', 'Chapter 5'];
 
 const NotesUploadDashboard = () => {
-  const [selectedBoard, setSelectedBoard] = useState<string>('');
-  const [customBoard, setCustomBoard] = useState<string>('');
-  const [selectedClass, setSelectedClass] = useState<string>('');
-  const [customClass, setCustomClass] = useState<string>('');
-  const [selectedSubject, setSelectedSubject] = useState<string>('');
-  const [customSubject, setCustomSubject] = useState<string>('');
-  const [selectedChapter, setSelectedChapter] = useState<string>('');
-  const [customChapter, setCustomChapter] = useState<string>('');
+  // States for form data
+  const [selectedBoardId, setSelectedBoardId] = useState<number | null>(null);
+  const [selectedClassId, setSelectedClassId] = useState<number | null>(null);
+  const [selectedSubjectId, setSelectedSubjectId] = useState<number | null>(null);
+  const [selectedChapterId, setSelectedChapterId] = useState<number | null>(null);
+  const [selectedBoardName, setSelectedBoardName] = useState<string>('');
+  const [selectedClassName, setSelectedClassName] = useState<string>('');
+  const [selectedSubjectName, setSelectedSubjectName] = useState<string>('');
+  const [selectedChapterName, setSelectedChapterName] = useState<string>('');
   const [topicName, setTopicName] = useState<string>('');
   const [file, setFile] = useState<File | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  
 
-  const handleBoardSubmit = () => {
-    const board = selectedBoard || customBoard;
+  const { 
+    data: boards = [],
+    isLoading: isLoadingBoards,
+    isError: isBoardsError
+  } = useQuery<BoardType[]>({
+    queryKey: ['boards'],
+    queryFn: fetchBoards,
+    staleTime: 1000 * 60 * 10, // 10 minutes
+  });
+  
+  const {
+    data: classes = [],
+    isLoading: isLoadingClasses,
+    isError: isClassesError
+  } = useQuery<ClassType[]>({
+    queryKey: ['classes', selectedBoardId],
+    queryFn: () => selectedBoardId ? fetchClasses(selectedBoardId) : Promise.resolve([]),
+    enabled: !!selectedBoardId,
+    staleTime: 1000 * 60 * 10,
+  });
+  
+  const {
+    data: subjects = [],
+    isLoading: isLoadingSubjects,
+    isError: isSubjectsError
+  } = useQuery<SubjectType[]>({
+    queryKey: ['subjects', selectedBoardId, selectedClassId],
+    queryFn: () => (selectedBoardId && selectedClassId) 
+      ? fetchSubjects(selectedBoardId, selectedClassId) 
+      : Promise.resolve([]),
+    enabled: !!selectedBoardId && !!selectedClassId,
+    staleTime: 1000 * 60 * 10,
+  });
+  
+  const {
+    data: chapters = [],
+    isLoading: isLoadingChapters,
+    isError: isChaptersError
+  } = useQuery<ChapterType[]>({
+    queryKey: ['chapters', selectedBoardId, selectedClassId, selectedSubjectId],
+    queryFn: () => (selectedBoardId && selectedClassId && selectedSubjectId) 
+      ? fetchChapters(selectedBoardId, selectedClassId, selectedSubjectId) 
+      : Promise.resolve([]),
+    enabled: !!selectedBoardId && !!selectedClassId && !!selectedSubjectId,
+    staleTime: 1000 * 60 * 10,
+  });
+  
+   // Handle board selection
+   const handleBoardChange = (boardName: string) => {
+    const board = boards.find(b => b.boardName === boardName);
     if (board) {
-      console.log('Board Selected:', board);
-      // Additional logic for board submission
+      setSelectedBoardId(board.boardId);
+      setSelectedBoardName(boardName);
     }
   };
 
-  const handleClassSubmit = () => {
-    const classValue = selectedClass || customClass;
-    if (classValue) {
-      console.log('Class Selected:', classValue);
-      // Additional logic for class submission
+  // Handle class selection
+  const handleClassChange = (className: string) => {
+    const classItem = classes.find(c => c.className === className);
+    if (classItem) {
+      setSelectedClassId(classItem.classId);
+      setSelectedClassName(className);
     }
   };
 
-  const handleChapterSubmit = () => {
-    const chapterValue = selectedChapter || customChapter;
-    if (chapterValue) {
-      console.log('Class Selected:', chapterValue);
-      // Additional logic for class submission
+  // Handle subject selection
+  const handleSubjectChange = (subjectName: string) => {
+    const subject = subjects.find(s => s.subjectName === subjectName);
+    if (subject) {
+      setSelectedSubjectId(subject.subjectId);
+      setSelectedSubjectName(subjectName);
+    }
+  };
+
+  // Handle chapter selection
+  const handleChapterChange = (chapterName: string) => {
+    const chapter = chapters.find(c => c.chapterName === chapterName);
+    if (chapter) {
+      setSelectedChapterId(chapter.chapterId);
+      setSelectedChapterName(chapterName);
     }
   };
   
-  const handleFinalSubmit = () => {
-    const board = selectedBoard || customBoard;
-    const classValue = selectedClass || customClass;
-    const subject = selectedSubject || customSubject;
-
-    if (board && classValue && subject && file) {
-      const formData = new FormData();
-      formData.append('board', board);
-      formData.append('class', classValue);
-      formData.append('subject', subject);
-      formData.append('chapter', selectedChapter);
-      formData.append('topicName', topicName);
-      formData.append('file', file);
-
-      console.log('Final Submission Data:', Object.fromEntries(formData));
-      // Implement actual upload logic here
+  // Upload mutation
+  const uploadMutation = useMutation({
+    mutationFn: (formData: FormData) => uploadNotes(formData),
+    onSuccess: () => {
+      // Reset form
+      setTopicName('');
+      setFile(null);
+      setError(null);
+      
+      toast.success('Notes uploaded successfully!');
+    },
+    onError: (error: Error) => {
+      setError(`Failed to upload notes: ${error.message}`);
     }
-  };
+  });
 
   const handleFileChange = (selectedFile: File) => {
     setFile(selectedFile);
   };
 
+  const handleUpload = async () => {
+    if (!selectedBoardId || !selectedClassId || !selectedSubjectId || !selectedChapterId || !topicName || !file) {
+      setError('All fields are required');
+      return;
+    }
+
+    try {
+      // Validate file size (25MB limit)
+      if (file.size > 50 * 1024 * 1024) {
+        setError('File size exceeds 10MB limit');
+        return;
+      }
+  
+      const formData = new FormData();
+      formData.append('topicName', topicName);
+      formData.append('chapterId', selectedChapterId.toString());
+
+      formData.append('file', file);
+
+      formData.append('isActive', 'true');
+      
+      uploadMutation.mutate(formData);
+    } catch (error) {
+      setError(`Error preparing upload: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  };
+
+    // Reset dependent fields when parent selection changes
+    useEffect(() => {
+      if (!selectedBoardId) {
+        setSelectedClassId(null);
+        setSelectedClassName('');
+        setSelectedSubjectId(null);
+        setSelectedSubjectName('');
+        setSelectedChapterId(null);
+        setSelectedChapterName('');
+      }
+    }, [selectedBoardId]);
+  
+    useEffect(() => {
+      if (!selectedClassId) {
+        setSelectedSubjectId(null);
+        setSelectedSubjectName('');
+        setSelectedChapterId(null);
+        setSelectedChapterName('');
+      }
+    }, [selectedClassId]);
+  
+    useEffect(() => {
+      if (!selectedSubjectId) {
+        setSelectedChapterId(null);
+        setSelectedChapterName('');
+      }
+    }, [selectedSubjectId]);
+
   return (
-      <Card className="w-full bg-[#1E1E1E] border-none">
-        <CardHeader>
-          <CardTitle className="text-3xl font-bold text-white">Notes Upload Dashboard</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Section 1: Board Selection */}
-          <div className="p-4 rounded-lg border border-[#6544A3]/30 bg-[#1E1E1E]">
-            <h2 className="text-lg font-semibold mb-4 text-white">1. Select Board</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Select 
-                value={selectedBoard} 
-                onValueChange={setSelectedBoard}
-              >
-                <SelectTrigger className="bg-[#3B444B]/50 text-white border-[#6544A3]">
-                  <SelectValue placeholder="Select Predefined Board" />
-                </SelectTrigger>
-                <SelectContent className="bg-[#1E1E1E] text-white border-[#6544A3]">
-                  {BOARDS.map((board) => (
-                    <SelectItem 
-                      key={board} 
-                      value={board}
-                      className="hover:bg-[#6544A3] focus:bg-[#6544A3]"
-                    >
-                      {board}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Input 
-                placeholder="Or Enter Custom Board"
-                value={customBoard}
-                onChange={(e) => setCustomBoard(e.target.value)}
-                className="bg-[#3B444B]/50 border-[#6544A3] text-white placeholder:text-gray-400"
-              />
-              <Button 
-                onClick={handleBoardSubmit} 
-                disabled={!selectedBoard && !customBoard}
-                className="bg-gradient-to-r from-[#8D6CCB] to-[#9000FF] hover:from-[#9000FF] hover:to-[#8D6CCB] text-white"
-              >
-                Submit Board
-              </Button>
+    <Card className="w-full max-w-4xl mx-auto bg-neutral-900/80 border-none shadow-lg mt-10">
+      <CardHeader className="space-y-1 pb-6 pt-8 px-6 md:px-8">
+        <CardTitle className="text-3xl font-bold text-white text-center">Upload Study Notes</CardTitle>
+        <CardDescription className="text-gray-400 text-center">
+          Add educational materials for students to access
+        </CardDescription>
+      </CardHeader>
+      
+      <CardContent className="px-6 md:px-8 pb-8">
+        <div className="p-6 rounded-lg border border-[#6544A3]/30 bg-[#242424] shadow-inner">
+          {error && (
+            <div className="mb-6 p-3 bg-red-500/20 border border-red-500/40 rounded text-red-200 text-sm">
+              {error}
             </div>
-          </div>
-
-          {/* Section 2: Class Selection */}
-          <div className="p-4 rounded-lg border border-[#6544A3]/30 bg-[#1E1E1E]">
-            <h2 className="text-lg font-semibold mb-4 text-white">2. Select Class</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Select 
-                value={selectedClass} 
-                onValueChange={setSelectedClass}
-              >
-                <SelectTrigger className="bg-[#3B444B]/50 text-white border-[#6544A3]">
-                  <SelectValue placeholder="Select Predefined Class" />
-                </SelectTrigger>
-                <SelectContent className="bg-[#1E1E1E] text-white border-[#6544A3]">
-                  {CLASSES.map((classNum) => (
-                    <SelectItem 
-                      key={classNum} 
-                      value={classNum}
-                      className="hover:bg-[#6544A3] focus:bg-[#6544A3]"
-                    >
-                      {classNum}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Input 
-                placeholder="Or Enter Custom Class"
-                value={customClass}
-                onChange={(e) => setCustomClass(e.target.value)}
-                className="bg-[#3B444B]/50 border-[#6544A3] text-white placeholder:text-gray-400"
-              />
-              <Select 
-                value={selectedSubject} 
-                onValueChange={setSelectedSubject}
-              >
-                <SelectTrigger className="bg-[#3B444B]/50 text-white border-[#6544A3]">
-                  <SelectValue placeholder="Select Predefined Subject" />
-                </SelectTrigger>
-                <SelectContent className="bg-[#1E1E1E] text-white border-[#6544A3]">
-                  {SUBJECTS.map((subject) => (
-                    <SelectItem 
-                      key={subject} 
-                      value={subject}
-                      className="hover:bg-[#6544A3] focus:bg-[#6544A3]"
-                    >
-                      {subject}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Input 
-                placeholder="Or Enter Custom Subject"
-                value={customSubject}
-                onChange={(e) => setCustomSubject(e.target.value)}
-                className="bg-[#3B444B]/50 border-[#6544A3] text-white placeholder:text-gray-400"
-              />
-              <Button 
-                onClick={handleClassSubmit} 
-                disabled={!selectedClass && !customClass}
-                className="bg-gradient-to-r from-[#8D6CCB] to-[#9000FF] hover:from-[#9000FF] hover:to-[#8D6CCB] text-white"
-              >
-                Submit Class
-              </Button>
-            </div>
-          </div>
-
+          )}
           
-           {/* Section 2: Chapter Selection */}
-           <div className="p-4 rounded-lg border border-[#6544A3]/30 bg-[#1E1E1E]">
-            <h2 className="text-lg font-semibold mb-4 text-white">3. Select Chapter</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Board</label>
               <Select 
-                value={selectedSubject} 
-                onValueChange={setSelectedSubject}
+                 value={selectedBoardName}
+                 onValueChange={handleBoardChange}
+                 disabled={isLoadingBoards}
               >
-                <SelectTrigger className="bg-[#3B444B]/50 text-white border-[#6544A3]">
-                  <SelectValue placeholder="Select Predefined Subject" />
+                <SelectTrigger className="bg-[#3B444B]/50 text-white border-[#6544A3] h-12">
+                  {isLoadingBoards ? (
+                    <div className="flex items-center">
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      <span>Loading...</span>
+                    </div>
+                  ) : (
+                    <SelectValue placeholder="Select Board" />
+                  )}
                 </SelectTrigger>
                 <SelectContent className="bg-[#1E1E1E] text-white border-[#6544A3]">
-                  {SUBJECTS.map((subjectNum) => (
-                    <SelectItem 
-                      key={subjectNum} 
-                      value={subjectNum}
-                      className="hover:bg-[#6544A3] focus:bg-[#6544A3]"
-                    >
-                      {subjectNum}
-                    </SelectItem>
-                  ))}
+                  {isBoardsError ? (
+                    <SelectItem value="error" disabled>Error loading boards</SelectItem>
+                  ) : (
+                    boards.map((board) => (
+                      <SelectItem 
+                        key={board.boardId} 
+                        value={board.boardName}
+                        className="hover:bg-[#6544A3] focus:bg-[#6544A3]"
+                      >
+                        {board.boardName}
+                      </SelectItem>
+                    ))
+                  )}
                 </SelectContent>
               </Select>
-             
-              <Select 
-                value={selectedChapter} 
-                onValueChange={setSelectedChapter}
-              >
-                <SelectTrigger className="bg-[#3B444B]/50 text-white border-[#6544A3]">
-                  <SelectValue placeholder="Select Predefined Chapters" />
-                </SelectTrigger>
-                <SelectContent className="bg-[#1E1E1E] text-white border-[#6544A3]">
-                  {CHAPTERS.map((chapter) => (
-                    <SelectItem 
-                      key={chapter} 
-                      value={chapter}
-                      className="hover:bg-[#6544A3] focus:bg-[#6544A3]"
-                    >
-                      {chapter}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Input 
-                placeholder="Or Enter Custom Chapter"
-                value={customChapter}
-                onChange={(e) => setCustomChapter(e.target.value)}
-                className="bg-[#3B444B]/50 border-[#6544A3] text-white placeholder:text-gray-400"
-              />
-              <Button 
-                onClick={handleChapterSubmit} 
-                disabled={!selectedChapter && !customChapter}
-                className="bg-gradient-to-r from-[#8D6CCB] to-[#9000FF] hover:from-[#9000FF] hover:to-[#8D6CCB] text-white"
-              >
-                Submit Chapter
-              </Button>
             </div>
-          </div>
 
-          {/* Final Upload Section */}
-          <div className="p-4 rounded-lg border border-[#6544A3]/30 bg-[#1E1E1E]">
-            <h2 className="text-lg font-semibold mb-4 text-white">3. Final Upload</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Class</label>
               <Select 
-                value={selectedBoard || customBoard ? (selectedBoard || customBoard) : ''} 
-                onValueChange={setSelectedBoard}
+                value={selectedClassName}
+                onValueChange={handleClassChange}
+                disabled={!selectedBoardId || isLoadingClasses}
               >
-                <SelectTrigger className="bg-[#3B444B]/50 text-white border-[#6544A3]">
-                  <SelectValue placeholder="Select Board" />
+                <SelectTrigger className="bg-[#3B444B]/50 text-white border-[#6544A3] h-12">
+                  {isLoadingClasses ? (
+                    <div className="flex items-center">
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      <span>Loading...</span>
+                    </div>
+                  ) : (
+                    <SelectValue placeholder="Select Class" />
+                  )}
                 </SelectTrigger>
                 <SelectContent className="bg-[#1E1E1E] text-white border-[#6544A3]">
-                  {BOARDS.map((board) => (
-                    <SelectItem 
-                      key={board} 
-                      value={board}
-                      className="hover:bg-[#6544A3] focus:bg-[#6544A3]"
-                    >
-                      {board}
-                    </SelectItem>
-                  ))}
+                  {isClassesError ? (
+                    <SelectItem value="error" disabled>Error loading classes</SelectItem>
+                  ) : (
+                    classes.map((classItem) => (
+                      <SelectItem 
+                        key={classItem.classId} 
+                        value={classItem.className}
+                        className="hover:bg-[#6544A3] focus:bg-[#6544A3]"
+                      >
+                        {classItem.className}
+                      </SelectItem>
+                    ))
+                  )}
                 </SelectContent>
               </Select>
+            </div>
 
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Subject</label>
               <Select 
-                value={selectedClass || customClass ? (selectedClass || customClass) : ''} 
-                onValueChange={setSelectedClass}
+                 value={selectedSubjectName}
+                 onValueChange={handleSubjectChange}
+                 disabled={!selectedClassId || isLoadingSubjects}
               >
-                <SelectTrigger className="bg-[#3B444B]/50 text-white border-[#6544A3]">
-                  <SelectValue placeholder="Select Class" />
+                <SelectTrigger className="bg-[#3B444B]/50 text-white border-[#6544A3] h-12">
+                  {isLoadingSubjects ? (
+                    <div className="flex items-center">
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      <span>Loading...</span>
+                    </div>
+                  ) : (
+                    <SelectValue placeholder="Select Subject" />
+                  )}
                 </SelectTrigger>
                 <SelectContent className="bg-[#1E1E1E] text-white border-[#6544A3]">
-                  {CLASSES.map((classNum) => (
-                    <SelectItem 
-                      key={classNum} 
-                      value={classNum}
-                      className="hover:bg-[#6544A3] focus:bg-[#6544A3]"
-                    >
-                      {classNum}
-                    </SelectItem>
-                  ))}
+                  {isSubjectsError ? (
+                    <SelectItem value="error" disabled>Error loading subjects</SelectItem>
+                  ) : (
+                    subjects.map((subject) => (
+                      <SelectItem 
+                        key={subject.subjectId} 
+                        value={subject.subjectName}
+                        className="hover:bg-[#6544A3] focus:bg-[#6544A3]"
+                      >
+                        {subject.subjectName}
+                      </SelectItem>
+                    ))
+                  )}
                 </SelectContent>
               </Select>
+            </div>
 
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Chapter</label>
               <Select 
-                value={selectedSubject || customSubject ? (selectedSubject || customSubject) : ''} 
-                onValueChange={setSelectedSubject}
+                 value={selectedChapterName}
+                 onValueChange={handleChapterChange}
+                 disabled={!selectedSubjectId || isLoadingChapters}
               >
-                <SelectTrigger className="bg-[#3B444B]/50 text-white border-[#6544A3]">
-                  <SelectValue placeholder="Select Subject" />
+                <SelectTrigger className="bg-[#3B444B]/50 text-white border-[#6544A3] h-12">
+                  {isLoadingChapters ? (
+                    <div className="flex items-center">
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      <span>Loading...</span>
+                    </div>
+                  ) : (
+                    <SelectValue placeholder="Select Chapter" />
+                  )}
                 </SelectTrigger>
                 <SelectContent className="bg-[#1E1E1E] text-white border-[#6544A3]">
-                  {SUBJECTS.map((subject) => (
-                    <SelectItem 
-                      key={subject} 
-                      value={subject}
-                      className="hover:bg-[#6544A3] focus:bg-[#6544A3]"
-                    >
-                      {subject}
-                    </SelectItem>
-                  ))}
+                  {isChaptersError ? (
+                    <SelectItem value="error" disabled>Error loading chapters</SelectItem>
+                  ) : (
+                    chapters.map((chapter) => (
+                      <SelectItem 
+                        key={chapter.chapterId} 
+                        value={chapter.chapterName}
+                        className="hover:bg-[#6544A3] focus:bg-[#6544A3]"
+                      >
+                        {chapter.chapterName}
+                      </SelectItem>
+                    ))
+                  )}
                 </SelectContent>
               </Select>
+            </div>
 
-              <Select 
-                value={selectedChapter} 
-                onValueChange={setSelectedChapter}
-              >
-                <SelectTrigger className="bg-[#3B444B]/50 text-white border-[#6544A3]">
-                  <SelectValue placeholder="Select Chapter" />
-                </SelectTrigger>
-                <SelectContent className="bg-[#1E1E1E] text-white border-[#6544A3]">
-                  {CHAPTERS.map((chapter) => (
-                    <SelectItem 
-                      key={chapter} 
-                      value={chapter}
-                      className="hover:bg-[#6544A3] focus:bg-[#6544A3]"
-                    >
-                      {chapter}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-300 mb-2">Topic Name</label>
               <Input 
-                placeholder="Enter Topic Name"
+                placeholder="Enter topic name"
                 value={topicName}
                 onChange={(e) => setTopicName(e.target.value)}
-                className="bg-[#3B444B]/50 border-[#6544A3] text-white placeholder:text-gray-400"
+                className="bg-[#3B444B]/50 border-[#6544A3] text-white placeholder:text-gray-400 h-12"
               />
+            </div>
 
-              <div className="col-span-1 md:col-span-2">
-                <FileUpload handleFileChange={handleFileChange}/>
-              </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-300 mb-2">Upload PDF</label>
+              <FileUpload handleFileChange={handleFileChange} />
+              {file && (
+                <p className="mt-2 text-sm text-green-400">
+                  File selected: {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)
+                </p>
+              )}
+            </div>
 
+            <div className="md:col-span-2 mt-4">
               <Button 
-                onClick={handleFinalSubmit} 
-                disabled={!selectedBoard && !customBoard || !selectedClass && !customClass || !selectedSubject && !customSubject || !file}
-                className="col-span-1 md:col-span-2 bg-gradient-to-r from-[#8D6CCB] to-[#9000FF] hover:from-[#9000FF] hover:to-[#8D6CCB] text-white h-10"
+                onClick={handleUpload} 
+                disabled={uploadMutation.isPending || !selectedBoardId || !selectedClassId || !selectedSubjectId || !selectedChapterId || !topicName || !file}
+                className="w-full bg-gradient-to-r from-[#8D6CCB] to-[#9000FF] hover:from-[#9000FF] hover:to-[#8D6CCB] text-white h-12 text-lg font-semibold"
               >
-                Upload Notes
+                {uploadMutation.isPending ? (
+                  <div className="flex items-center justify-center">
+                    <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                    <span>Uploading...</span>
+                  </div>
+                ) : 'Upload Notes'}
               </Button>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 
