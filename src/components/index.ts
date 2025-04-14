@@ -25,6 +25,7 @@ import  RegisterForm  from "./Students/registerForm";
 import StudentTable from "./Students/studentTable";
 import SearchSection from "./Students/searchSection";
 import LoginForm from "./LoginForm/loginForm";
+import HierarchyManagement from "./ManageNotes/hierarchyManagement";
 
 export {
     Navbar,
@@ -51,5 +52,6 @@ export {
     RegisterForm,
     StudentTable,
     SearchSection,
-    LoginForm
+    LoginForm,
+    HierarchyManagement
 };
