@@ -18,5 +18,33 @@ interface ChapterType {
     chapterName: string;
 }
 
+interface Topic {
+    id: string;
+    name: string;
+    boardId: string;
+    board: string;
+    classId: string;
+    class: string;
+    subjectId: string;
+    subject: string;
+    chapter: string;
+    pdfUrl: string;
+    uploadedAt: string;
+    isActive: boolean;
+}
 
-export type {BoardType , ClassType, SubjectType, ChapterType};
+interface FilterOption {
+    id: string;
+    name: string;
+    boardId?: string;
+    classId?: string;
+}
+
+export type {
+    BoardType,
+    ClassType,
+    SubjectType,
+    ChapterType,
+    Topic,
+    FilterOption,
+};

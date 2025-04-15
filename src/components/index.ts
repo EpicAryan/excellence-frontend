@@ -26,6 +26,13 @@ import StudentTable from "./Students/studentTable";
 import SearchSection from "./Students/searchSection";
 import LoginForm from "./LoginForm/loginForm";
 import HierarchyManagement from "./ManageNotes/hierarchyManagement";
+import ContentManagement from "./ManageNotes/contentManagement";
+import { TopicViewDialog } from "./ManageNotes/topicViewDialog";
+import { TopicEditDialog } from "./ManageNotes/topicEditDialog";
+import { DeleteConfirmationDialog } from "./ManageNotes/deleteConfirmationDialog";
+import { CustomPagination } from "./Pagination/pagination";
+import { TopicTable } from "./ManageNotes/topicTable";
+import { SearchFilterBar } from "./SearchFilterBar/searchFilterBar";
 
 export {
     Navbar,
@@ -53,5 +60,12 @@ export {
     StudentTable,
     SearchSection,
     LoginForm,
-    HierarchyManagement
+    HierarchyManagement,
+    ContentManagement,
+    TopicViewDialog ,
+    TopicEditDialog ,
+    DeleteConfirmationDialog ,
+    CustomPagination ,
+    TopicTable ,
+    SearchFilterBar 
 };
