@@ -33,7 +33,7 @@ import {
     createChapter,
     updateChapter,
     deleteChapter,
-} from "@/app/actions/notes";
+} from "@/app/actions/notes.actions";
 
 import {
     AlertDialog,
@@ -57,7 +57,9 @@ export default function HierarchyManagement() {
 
     // Edit states
     const [editId, setEditId] = useState<string | null>(null);
-    const [editType, setEditType] = useState<"board" | "class" | "subject" | "chapter" | null>(null);
+    const [editType, setEditType] = useState<
+        "board" | "class" | "subject" | "chapter" | null
+    >(null);
     const [editName, setEditName] = useState("");
 
     // Add new states
@@ -65,7 +67,10 @@ export default function HierarchyManagement() {
     const [isAddingItem, setIsAddingItem] = useState(false);
 
     const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false);
-    const [deleteItemInfo, setDeleteItemInfo] = useState<{type: ItemType | null; id: string | null;}>({ type: null, id: null });
+    const [deleteItemInfo, setDeleteItemInfo] = useState<{
+        type: ItemType | null;
+        id: string | null;
+    }>({ type: null, id: null });
     const [showEditDialog, setShowEditDialog] = useState<boolean>(false);
     const [editItemInfo, setEditItemInfo] = useState<{
         type: ItemType | null;

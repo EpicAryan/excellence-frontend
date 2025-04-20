@@ -3,7 +3,7 @@
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search, Filter } from 'lucide-react';
-import { FilterOption } from '@/types/notes';
+import { BoardType, ClassType, SubjectType } from '@/types/notes';
 
 interface SearchFilterBarProps {
   searchTerm: string;
@@ -14,9 +14,9 @@ interface SearchFilterBarProps {
   setFilterClass: (cls: string) => void;
   filterSubject: string;
   setFilterSubject: (subject: string) => void;
-  boards: FilterOption[];
-  filteredClasses: FilterOption[];
-  filteredSubjects: FilterOption[];
+  boards: BoardType[];
+  filteredClasses: ClassType[];
+  filteredSubjects: SubjectType[];
 }
 
 export function SearchFilterBar({
@@ -56,11 +56,11 @@ export function SearchFilterBar({
             </SelectItem>
             {boards.map((board) => (
               <SelectItem 
-                key={board.id} 
-                value={board.id}
+                key={board.boardId} 
+                value={String(board.boardId)}
                 className="hover:bg-[#6544A3] focus:bg-[#6544A3]"
               >
-                {board.name}
+                {board.boardName}
               </SelectItem>
             ))}
           </SelectContent>
@@ -81,11 +81,11 @@ export function SearchFilterBar({
             </SelectItem>
             {filteredClasses.map((classItem) => (
               <SelectItem 
-                key={classItem.id} 
-                value={classItem.id}
+                key={classItem.classId} 
+                value={String(classItem.classId)}
                 className="hover:bg-[#6544A3] focus:bg-[#6544A3]"
               >
-                Class {classItem.name}
+                {classItem.className}
               </SelectItem>
             ))}
           </SelectContent>
@@ -106,11 +106,11 @@ export function SearchFilterBar({
             </SelectItem>
             {filteredSubjects.map((subject) => (
               <SelectItem 
-                key={subject.id} 
-                value={subject.id}
+                key={subject.subjectId} 
+                value={String(subject.subjectId)}
                 className="hover:bg-[#6544A3] focus:bg-[#6544A3]"
               >
-                {subject.name}
+                {subject.subjectName}
               </SelectItem>
             ))}
           </SelectContent>

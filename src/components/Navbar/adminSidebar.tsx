@@ -87,7 +87,7 @@ const AdminSidebar = () => {
                     <SidebarMenu>
                         {sidebarItems.map((item, index) => (
                             <SidebarMenuItem key={index}>
-                                <SidebarMenuButton asChild className="hover:bg-[#8D6CCB]">
+                                <SidebarMenuButton asChild className="hover:bg-[#8D6CCB] active:scale-105 active:bg-[#8D6CCB] active:text-white">
                                     <Link
                                         href={`/admin/${item.path}`}
                                         className="flex items-center gap-2 text-neutral-900 font-medium hover:text-white rounded-md p-2"

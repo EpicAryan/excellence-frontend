@@ -4,7 +4,7 @@ import React from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
-import { loginAction, getUserRoleFromToken } from '@/app/actions/auth'
+import { loginAction, getUserRoleFromToken } from '@/app/actions/auth.actions'
 import { toast } from "sonner";
 
 

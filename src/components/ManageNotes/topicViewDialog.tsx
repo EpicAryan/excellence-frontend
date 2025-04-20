@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Topic } from '@/types/notes';
+import { format } from 'date-fns';
 
 interface TopicViewDialogProps {
   isOpen: boolean;
@@ -12,16 +13,11 @@ interface TopicViewDialogProps {
 }
 
 export function TopicViewDialog({ isOpen, setIsOpen, topic }: TopicViewDialogProps) {
-  // Format date for display
-  const formatDate = (dateString: string) => {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
+
+   const formatDate = (dateString: string) => {
+      if(!dateString) return '';
+      return format(new Date(dateString), 'MMM dd, yyyy');
+    };
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -37,19 +33,19 @@ export function TopicViewDialog({ isOpen, setIsOpen, topic }: TopicViewDialogPro
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label className="text-[#B091EA]">Topic Name</Label>
-                <p className="text-white">{topic.name}</p>
+                <p className="text-white">{topic.topicName}</p>
               </div>
-              <div>
+              {/* <div>
                 <Label className="text-[#B091EA]">PDF</Label>
-                <p className="text-[#8D6CCB] underline">{topic.pdfUrl}</p>
-              </div>
+                <p className="text-[#8D6CCB] underline text-wrap">{topic.pdfUrl}</p>
+              </div> */}
               <div>
                 <Label className="text-[#B091EA]">Board</Label>
                 <p className="text-white">{topic.board}</p>
               </div>
               <div>
                 <Label className="text-[#B091EA]">Class</Label>
-                <p className="text-white">Class {topic.class}</p>
+                <p className="text-white">{topic.class}</p>
               </div>
               <div>
                 <Label className="text-[#B091EA]">Subject</Label>
@@ -59,7 +55,7 @@ export function TopicViewDialog({ isOpen, setIsOpen, topic }: TopicViewDialogPro
                 <Label className="text-[#B091EA]">Chapter</Label>
                 <p className="text-white">{topic.chapter}</p>
               </div>
-              <div className="col-span-2">
+              <div className="">
                 <Label className="text-[#B091EA]">Uploaded</Label>
                 <p className="text-white">{formatDate(topic.uploadedAt)}</p>
               </div>

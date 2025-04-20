@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {  FileText } from 'lucide-react';
 // Types
-import { Topic, FilterOption } from '@/types/notes';
+import { Topic } from '@/types/notes';
 // Components
 import { TopicViewDialog } from '@/components';
 import { TopicEditDialog } from '@/components';
@@ -13,119 +13,72 @@ import { DeleteConfirmationDialog } from '@/components';
 import { CustomPagination } from '@/components';
 import { TopicTable } from '@/components';
 import { SearchFilterBar } from '@/components';
-
-// Sample data - replace with actual API data
-const initialTopics: Topic[] = [
-  { 
-    id: '1', 
-    name: 'Algebraic Expressions', 
-    boardId: '1', 
-    board: 'CBSE',
-    classId: '3', 
-    class: '10',
-    subjectId: '1',
-    subject: 'Mathematics',
-    chapter: 'Chapter 2',
-    pdfUrl: '/sample.pdf',
-    uploadedAt: '2025-02-15T12:00:00Z',
-    isActive: true
-  },
-  { 
-    id: '2', 
-    name: 'Cell Structure', 
-    boardId: '1', 
-    board: 'CBSE',
-    classId: '3', 
-    class: '10',
-    subjectId: '2',
-    subject: 'Science',
-    chapter: 'Chapter 1',
-    pdfUrl: '/sample2.pdf',
-    uploadedAt: '2025-02-17T14:30:00Z',
-    isActive: false
-  },
-  { 
-    id: '3', 
-    name: 'Shakespearean Drama', 
-    boardId: '2', 
-    board: 'ICSE',
-    classId: '4', 
-    class: '11',
-    subjectId: '3',
-    subject: 'English',
-    chapter: 'Chapter 3',
-    pdfUrl: '/sample3.pdf',
-    uploadedAt: '2025-03-01T09:15:00Z',
-    isActive: true
-  },
-];
-
-// Sample board, class, subject data (normally would come from API)
-const BOARDS: FilterOption[] = [
-  { id: '1', name: 'CBSE' },
-  { id: '2', name: 'ICSE' },
-  { id: '3', name: 'WB' },
-];
-
-const CLASSES: FilterOption[] = [
-  { id: '3', name: '10', boardId: '1' },
-  { id: '4', name: '11', boardId: '2' },
-];
-
-const SUBJECTS: FilterOption[] = [
-  { id: '1', name: 'Mathematics', classId: '3' },
-  { id: '2', name: 'Science', classId: '3' },
-  { id: '3', name: 'English', classId: '4' },
-];
+import { useQuery } from '@tanstack/react-query';
+import { useTopics } from '@/hooks/useTopics';
+import { useDeleteTopic } from '@/hooks/useDeleteTopic'; 
+import {
+  fetchBoards,
+  fetchClasses,
+  fetchSubjects
+} from '@/app/actions/notes.actions'
+import { useToggleTopicStatus } from '@/hooks/useToggleTopicStatus';
 
 export default function NotesContentManagement() {
-  const [topics, setTopics] = useState<Topic[]>(initialTopics);
-  const [searchTerm, setSearchTerm] = useState<string>('');
+  const { mutate: toggleStatus } = useToggleTopicStatus();
+  const { mutate: deleteTopic, isPending: isDeleting } = useDeleteTopic(() => {
+    setIsDeleteDialogOpen(false);
+    setTopicToDelete(null);
+  });
   
-  // Filter states
-  const [filterBoard, setFilterBoard] = useState<string>('');
-  const [filterClass, setFilterClass] = useState<string>('');
-  const [filterSubject, setFilterSubject] = useState<string>('');
-  
-  // Dialog states
   const [isViewDialogOpen, setIsViewDialogOpen] = useState<boolean>(false);
   const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState<boolean>(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
   const [topicToDelete, setTopicToDelete] = useState<string | null>(null);
 
-  // Pagination states
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
-  
-  // Filter classes based on selected board
-  const filteredClasses = CLASSES.filter(cls => 
-    !filterBoard || cls.boardId === filterBoard
-  );
-  
-  // Filter subjects based on selected class
-  const filteredSubjects = SUBJECTS.filter(subj => 
-    !filterClass || subj.classId === filterClass
-  );
-  
-  // Apply filters and search to topics
-  const filteredTopics = topics.filter(topic => {
-    const matchesBoard = !filterBoard || filterBoard === "all" || topic.boardId === filterBoard;
-    const matchesClass = !filterClass || filterClass === "all" || topic.classId === filterClass;
-    const matchesSubject = !filterSubject || filterSubject === "all" || topic.subjectId === filterSubject;
-    const matchesSearch = !searchTerm || 
-      topic.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      topic.chapter.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      topic.subject.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    return matchesBoard && matchesClass && matchesSubject && matchesSearch;
+  const {
+    topics,
+    pagination,
+    isLoading,
+    filters,
+    updateSearch,
+    updateFilters,
+    updatePage,
+    refetch
+  } = useTopics({
+    limit: 5, // Match with your initial itemsPerPage
   });
   
-  // Get current page items
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredTopics.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(filteredTopics.length / itemsPerPage);
+  const {
+    data: boards = [],
+    // isLoading: isLoadingBoards,
+    // error: boardsError,
+} = useQuery({
+    queryKey: ["boards"],
+    queryFn: fetchBoards,
+});
+
+const {
+    data: classes = [],
+    // isLoading: isLoadingClasses,
+    // error: classesError,
+} = useQuery({
+    queryKey: ["classes", filters.boardId],
+    queryFn: () => fetchClasses(Number(filters.boardId)),
+    enabled: !!filters.boardId,
+});
+
+const {
+    data: subjects = [],
+    // isLoading: isLoadingSubjects,
+    // error: subjectsError,
+} = useQuery({
+    queryKey: ["subjects", filters.classId],
+    queryFn: () =>
+        fetchSubjects(Number(filters.boardId), Number(filters.classId)),
+    enabled: !!filters.classId,
+});
+  
   
   // Handle view topic
   const handleViewTopic = (topic: Topic) => {
@@ -140,16 +93,13 @@ export default function NotesContentManagement() {
   };
   
   // Save edited topic
-  const handleSaveEdit = (editedTopic: Topic) => {
-    setTopics(prevTopics => 
-      prevTopics.map(topic => 
-        topic.id === editedTopic.id ? editedTopic : topic
-      )
-    );
-    
-    setIsEditDialogOpen(false);
-    
-    // In a real app, you would make an API call to update the topic
+  const handleSaveEdit = async () => {
+    try {
+      setIsEditDialogOpen(false);
+      refetch();
+    } catch (error) {
+      console.error("Error updating topic:", error);
+    }
   };
   
   // Handle delete topic dialog
@@ -159,34 +109,32 @@ export default function NotesContentManagement() {
   };
   
   // Confirm delete topic
-  const confirmDeleteTopic = () => {
+  const confirmDeleteTopic = async () => {
     if (!topicToDelete) return;
-    
-    setTopics(prevTopics => 
-      prevTopics.filter(topic => topic.id !== topicToDelete)
-    );
-    
-    setIsDeleteDialogOpen(false);
-    setTopicToDelete(null);
-    
-    // In a real app, you would make an API call to delete the topic
+    deleteTopic(topicToDelete);
   };
   
-  const toggleActiveStatus = (topicId: string) => {
-    setTopics(prevTopics =>
-      prevTopics.map(topic =>
-        topic.id === topicId ? { ...topic, isActive: !topic.isActive } : topic
-      )
-    );
-    // In a real app, you would make an API call to update the status
+  const toggleActiveStatus = async (topicId: string) => {
+    const topic = topics.find((t) => t.topicId === topicId);
+    if (!topic) return;
+  
+    try {
+      await toggleStatus({ topicId, isActive: !topic.isActive });
+    } catch (error) {
+      console.error("Error updating topic status:", error);
+    } 
   };
+  
 
   // Reset all filters
   const resetFilters = () => {
-    setFilterBoard('');
-    setFilterClass('');
-    setFilterSubject('');
-    setSearchTerm('');
+    updateFilters({
+      boardId: '',
+      classId: '',
+      subjectId: '',
+      search: '',
+      page: 1
+    });
   };
 
   return (
@@ -210,40 +158,41 @@ export default function NotesContentManagement() {
       <CardContent className="space-y-6">
         {/* Search and Filter Section */}
         <SearchFilterBar
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          filterBoard={filterBoard}
-          setFilterBoard={setFilterBoard}
-          filterClass={filterClass}
-          setFilterClass={setFilterClass}
-          filterSubject={filterSubject}
-          setFilterSubject={setFilterSubject}
-          boards={BOARDS}
-          filteredClasses={filteredClasses}
-          filteredSubjects={filteredSubjects}
+          searchTerm={filters.search || ''}
+          setSearchTerm={(term) => updateSearch(term)}
+          filterBoard={filters.boardId || ''}
+          setFilterBoard={(boardId) => updateFilters({ boardId })}
+          filterClass={filters.classId || ''}
+          setFilterClass={(classId) => updateFilters({ classId })}
+          filterSubject={filters.subjectId || ''}
+          setFilterSubject={(subjectId) => updateFilters({ subjectId })}
+          boards={boards}
+          filteredClasses={classes}
+          filteredSubjects={subjects}
         />
         
         {/* Topics List */}
         <div className="rounded-lg border border-[#6544A3]/30 overflow-hidden">
           <TopicTable
-            topics={currentItems}
+            topics={topics}
             handleViewTopic={handleViewTopic}
             handleEditTopic={handleEditTopic}
             handleDeleteDialog={handleDeleteDialog}
             toggleActiveStatus={toggleActiveStatus}
+            isLoading={isLoading}
           />
-          
         </div>
       </CardContent>
-          {/* {filteredTopics.length > itemsPerPage && ( */}
-            <div className="py-4 flex justify-center">
-              <CustomPagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={setCurrentPage}
-              />
-            </div>
-          {/* )} */}
+      
+      {pagination && pagination.totalPages > 1 && (
+        <div className="py-4 flex justify-center">
+          <CustomPagination
+            currentPage={pagination.page}
+            totalPages={pagination.totalPages}
+            onPageChange={updatePage}
+          />
+        </div>
+      )}
       
       {/* View Topic Dialog */}
       <TopicViewDialog
@@ -257,9 +206,6 @@ export default function NotesContentManagement() {
         isOpen={isEditDialogOpen}
         setIsOpen={setIsEditDialogOpen}
         topic={selectedTopic}
-        boards={BOARDS}
-        classes={CLASSES}
-        subjects={SUBJECTS}
         onSave={handleSaveEdit}
       />
       
@@ -268,6 +214,7 @@ export default function NotesContentManagement() {
         isOpen={isDeleteDialogOpen}
         setIsOpen={setIsDeleteDialogOpen}
         onConfirm={confirmDeleteTopic}
+        isDeleting={isDeleting}
       />
     </Card>
   );

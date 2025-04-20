@@ -5,17 +5,15 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
-import { Topic, FilterOption } from '@/types/notes';
+import { Topic } from '@/types/notes';
+import { useUpdateTopic } from '@/hooks/useUpdateTopic';
+import { toast } from 'sonner';
+import { Loader2 } from 'lucide-react';
 
 interface TopicEditDialogProps {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
   topic: Topic | null;
-  boards: FilterOption[];
-  classes: FilterOption[];
-  subjects: FilterOption[];
   onSave: (topic: Topic) => void;
 }
 
@@ -23,28 +21,42 @@ export function TopicEditDialog({
   isOpen, 
   setIsOpen, 
   topic, 
-  boards, 
-  classes, 
-  subjects,
   onSave 
 }: TopicEditDialogProps) {
   const [editedTopic, setEditedTopic] = useState<Topic | null>(null);
-  
+  const { mutate: updateTopic, isPending } = useUpdateTopic();
   // Update form when topic changes
   useEffect(() => {
     if (topic) {
       setEditedTopic({
         ...topic,
-        boardId: topic.boardId || "0",
-        classId: topic.classId || "0",
-        subjectId: topic.subjectId || "0",
       });
     }
   }, [topic]);
   
   const handleSaveEdit = () => {
-    if (!editedTopic) return;
-    onSave(editedTopic);
+    if (!editedTopic || !editedTopic.topicId) {
+      toast.error("Topic information is incomplete");
+      return;
+    }
+    // Prepare topic data for update
+    const topicData: Partial<Topic> = {
+      topicName: editedTopic.topicName,
+    };
+    
+    // Call mutation
+    updateTopic(
+      { 
+        topicId: editedTopic.topicId, 
+        topicData 
+      },
+      {
+        onSuccess: () => {
+          setIsOpen(false);
+          onSave(editedTopic);
+        }
+      }
+    );
   };
   
   if (!editedTopic) return null;
@@ -55,7 +67,7 @@ export function TopicEditDialog({
         <DialogHeader>
           <DialogTitle className="text-[#B091EA]">Edit Topic</DialogTitle>
           <DialogDescription className="text-gray-400">
-            Make changes to the topic information.
+            Update the topic name.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 pt-4">
@@ -63,123 +75,35 @@ export function TopicEditDialog({
             <Label htmlFor="topicName" className="text-[#B091EA]">Topic Name</Label>
             <Input 
               id="topicName"
-              value={editedTopic.name}
-              onChange={(e) => setEditedTopic({...editedTopic, name: e.target.value})}
+              value={editedTopic.topicName}
+              onChange={(e) => setEditedTopic({...editedTopic, topicName: e.target.value})}
               className="bg-[#3B444B]/50 border-[#6544A3] text-white"
+              disabled={isPending}
             />
-          </div>
-          
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="board" className="text-[#B091EA]">Board</Label>
-              <Select 
-                value={editedTopic.boardId}
-                onValueChange={(value) => setEditedTopic({...editedTopic, boardId: value})}
-              >
-                <SelectTrigger id="board" className="bg-[#3B444B]/50 text-white border-[#6544A3]">
-                  <SelectValue placeholder="Select Board" />
-                </SelectTrigger>
-                <SelectContent className="bg-[#1E1E1E] text-white border-[#6544A3]">
-                  {boards.map((board) => (
-                    <SelectItem 
-                      key={board.id} 
-                      value={board.id} 
-                      className="hover:bg-[#6544A3] focus:bg-[#6544A3]"
-                    >
-                      {board.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="class" className="text-[#B091EA]">Class</Label>
-              <Select 
-                value={editedTopic.classId}
-                onValueChange={(value) => setEditedTopic({...editedTopic, classId: value})}
-              >
-                <SelectTrigger id="class" className="bg-[#3B444B]/50 text-white border-[#6544A3]">
-                  <SelectValue placeholder="Select Class" />
-                </SelectTrigger>
-                <SelectContent className="bg-[#1E1E1E] text-white border-[#6544A3]">
-                  {classes.map((classItem) => (
-                    <SelectItem 
-                      key={classItem.id} 
-                      value={classItem.id}
-                      className="hover:bg-[#6544A3] focus:bg-[#6544A3]"
-                    >
-                      Class {classItem.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="subject" className="text-[#B091EA]">Subject</Label>
-              <Select 
-                value={editedTopic.subjectId}
-                onValueChange={(value) => setEditedTopic({...editedTopic, subjectId: value})}
-              >
-                <SelectTrigger id="subject" className="bg-[#3B444B]/50 text-white border-[#6544A3]">
-                  <SelectValue placeholder="Select Subject" />
-                </SelectTrigger>
-                <SelectContent className="bg-[#1E1E1E] text-white border-[#6544A3]">
-                  {subjects.map((subject) => (
-                    <SelectItem 
-                      key={subject.id} 
-                      value={subject.id} 
-                      className="hover:bg-[#6544A3] focus:bg-[#6544A3]"
-                    >
-                      {subject.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="chapter" className="text-[#B091EA]">Chapter</Label>
-              <Input 
-                id="chapter"
-                value={editedTopic.chapter}
-                onChange={(e) => setEditedTopic({...editedTopic, chapter: e.target.value})}
-                className="bg-[#3B444B]/50 border-[#6544A3] text-white"
-              />
-            </div>
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="activeStatus" className="text-[#B091EA] flex items-center">
-              Active Status
-              <div className="ml-auto">
-                <Switch
-                  id="activeStatus"
-                  checked={editedTopic.isActive}
-                  onCheckedChange={(checked) => setEditedTopic({...editedTopic, isActive: checked})}
-                  className="data-[state=checked]:bg-[#8D6CCB]"
-                />
-              </div>
-            </Label>
-            <p className="text-gray-400 text-xs">
-              Toggle to set this topic as active or inactive.
-            </p>
-          </div>
+          </div>   
           
           <DialogFooter className="pt-4">
             <Button 
               variant="outline"
               onClick={() => setIsOpen(false)}
-              className="border-[#6544A3] text-[#B091EA] hover:bg-[#6544A3]/20"
+              className="border-[#6544A3] text-[#B091EA] hover:bg-[#6544A3]/70 hover:text-white active:scale-105"
+              disabled={isPending}
             >
               Cancel
             </Button>
             <Button 
               onClick={handleSaveEdit}
-              className="bg-gradient-to-r from-[#8D6CCB] to-[#9000FF] hover:from-[#9000FF] hover:to-[#8D6CCB] text-white"
+              className="bg-gradient-to-r from-[#8D6CCB] to-[#9000FF] hover:from-[#9000FF] hover:to-[#8D6CCB] text-white active:scale-105"
+              disabled={isPending}
             >
-              Save Changes
+              {isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                'Save Changes'
+              )}
             </Button>
           </DialogFooter>
         </div>

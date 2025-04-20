@@ -2,17 +2,19 @@
 
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-
+import { Loader2 } from 'lucide-react';
 interface DeleteConfirmationDialogProps {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
   onConfirm: () => void;
+  isDeleting?: boolean;
 }
 
 export function DeleteConfirmationDialog({ 
   isOpen, 
   setIsOpen, 
-  onConfirm 
+  onConfirm,
+  isDeleting = false 
 }: DeleteConfirmationDialogProps) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -27,15 +29,24 @@ export function DeleteConfirmationDialog({
           <Button 
             variant="outline"
             onClick={() => setIsOpen(false)}
-            className="border-[#6544A3] text-[#B091EA] hover:bg-[#6544A3]/20"
+            className="border-[#6544A3] text-[#B091EA] hover:bg-[#6544A3]/70 hover:text-white active:scale-105"
+            disabled={isDeleting}
           >
             Cancel
           </Button>
           <Button 
             onClick={onConfirm}
-            className="bg-red-600 hover:bg-red-700 text-white"
+            className="bg-red-600 hover:bg-red-700 text-white active:scale-105"
+            disabled={isDeleting}
           >
-            Delete
+          {isDeleting ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Deleting...
+            </>
+            ) : (
+              'Delete'
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -6,11 +6,13 @@ interface BoardType {
 interface ClassType {
     classId: number;
     className: string;
+    boardId?: string;
 }
 
 interface SubjectType {
     subjectId: number;
     subjectName: string;
+    classId?: string;
 }
 
 interface ChapterType {
@@ -19,8 +21,8 @@ interface ChapterType {
 }
 
 interface Topic {
-    id: string;
-    name: string;
+    topicId: string;
+    topicName: string;
     boardId: string;
     board: string;
     classId: string;
@@ -28,6 +30,7 @@ interface Topic {
     subjectId: string;
     subject: string;
     chapter: string;
+    chapterId: string;
     pdfUrl: string;
     uploadedAt: string;
     isActive: boolean;
