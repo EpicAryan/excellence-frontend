@@ -42,6 +42,11 @@ interface FilterOption {
     boardId?: string;
     classId?: string;
 }
+interface UserType {
+    id: number;
+    email: string;
+    username: string;
+  }
 
 export type {
     BoardType,
@@ -50,4 +55,5 @@ export type {
     ChapterType,
     Topic,
     FilterOption,
+    UserType
 };
