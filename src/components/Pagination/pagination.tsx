@@ -28,7 +28,7 @@ export function CustomPagination({
           <PaginationItem>
             <PaginationPrevious 
               onClick={() => onPageChange(currentPage - 1)}
-              className="cursor-pointer border border-[#6544A3] text-[#B091EA] hover:bg-[#6544A3]/20" 
+              className="cursor-pointer border border-[#6544A3] text-[#B091EA] hover:bg-[#6544A3]/70 hover:text-white" 
             />
           </PaginationItem>
         )}
@@ -50,7 +50,7 @@ export function CustomPagination({
                   className={`cursor-pointer ${
                     currentPage === pageNumber 
                       ? 'bg-[#6544A3] text-white' 
-                      : 'text-[#B091EA] hover:bg-[#6544A3]/20 border border-[#6544A3]'
+                      : 'text-[#B091EA] hover:bg-[#6544A3]/70 hover:text-white border border-[#6544A3]'
                   }`}
                 >
                   {pageNumber}
@@ -74,7 +74,7 @@ export function CustomPagination({
           <PaginationItem>
             <PaginationNext 
               onClick={() => onPageChange(currentPage + 1)}
-              className="cursor-pointer border border-[#6544A3] text-[#B091EA] hover:bg-[#6544A3]/20" 
+              className="cursor-pointer border border-[#6544A3] text-[#B091EA] hover:bg-[#6544A3]/70 hover:text-white" 
             />
           </PaginationItem>
         )}

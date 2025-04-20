@@ -46,7 +46,7 @@ export default function NotesContentManagement() {
     updatePage,
     refetch
   } = useTopics({
-    limit: 5, // Match with your initial itemsPerPage
+    limit: 3, 
   });
   
   const {
@@ -149,7 +149,7 @@ const {
             variant="outline" 
             size="default"
             onClick={resetFilters}
-            className="border-[#6544A3] text-[#B091EA] hover:bg-[#6544A3]/70 hover:text-white tracking-wide"
+            className="border-[#6544A3] text-[#B091EA] hover:bg-[#6544A3]/70 hover:text-white tracking-wide active:scale-105"
           >
             Reset Filters
           </Button>
