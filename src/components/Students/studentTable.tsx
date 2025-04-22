@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState } from "react";
 import {
   Table,
   TableBody,
@@ -12,98 +12,70 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { X, Loader2 } from "lucide-react";
+import { X, Loader2, Check, X as XIcon } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { format } from 'date-fns';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { useStudents, useTogglePermission, useRemoveBatch, useRemoveStudent } from "@/hooks/student-hooks";
 
-type Student = {
-  id: string;
-  name: string;
-  email: string;
-  enrolledDate: string;
-  batches: Array<{
-    id: string;
-    name: string;
-    type: 'batch' | 'class';
-  }>;
-};
 
 const StudentTable = () => {
-  const [students, setStudents] = useState<Student[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [studentToRemove, setStudentToRemove] = useState<string | null>(null);
+  const [batchToRemove, setBatchToRemove] = useState<{studentId: string, batchId: string} | null>(null);
 
-  useEffect(() => {
-    const fetchStudents = async () => {
-      try {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        
-        // Sample data
-        const data: Student[] = [
-          {
-            id: '1',
-            name: 'John Doe',
-            email: 'john@example.com',
-            enrolledDate: '2023-01-15',
-            batches: [
-              { id: 'b1', name: 'Batch 1', type: 'batch' },
-              { id: 'c2', name: 'Class 2', type: 'class' }
-            ]
-          },
-          {
-            id: '2',
-            name: 'Jane Smith',
-            email: 'jane@example.com',
-            enrolledDate: '2023-02-20',
-            batches: [
-              { id: 'b1', name: 'Batch 1', type: 'batch' }
-            ]
-          },
-          {
-            id: '3',
-            name: 'Alex Johnson',
-            email: 'alex@example.com',
-            enrolledDate: '2023-03-05',
-            batches: [
-              { id: 'c1', name: 'Class 1', type: 'class' }
-            ]
-          }
-        ];
-        
-        setStudents(data);
-      } catch (err) {
-        setError('Failed to load students. Please try again.');
-        console.error('Error fetching students:', err);
-      } finally {
-        setIsLoading(false);
-      }
+  const formatDate = (dateString: string) => {
+      if(!dateString) return '';
+      return format(new Date(dateString), 'MMM dd, yyyy');
     };
 
-    fetchStudents();
-  }, []);
+  // Custom hooks
+  const { data: students, isLoading, error, refetch } = useStudents();
+  const { mutate: togglePermission, isPending: isTogglingPermission, currentStudentId: togglingStudentId } = useTogglePermission();
+  const { mutate: removeBatch, isPending: isRemovingBatch } = useRemoveBatch();
+  const { mutate: removeStudentMutation, isPending: isRemovingStudent } = useRemoveStudent();
 
-  const handleRemoveBatch = (studentId: string, batchId: string) => {
-    setStudents(students.map(student => {
-      if (student.id === studentId) {
-        return {
-          ...student,
-          batches: student.batches.filter(batch => batch.id !== batchId)
-        };
-      }
-      return student;
-    }));
+  const handlePermissionToggle = (studentId: string, currentValue: boolean) => {
+    togglePermission({ studentId, hasPermission: !currentValue });
   };
 
-  const handleRemoveStudent = (studentId: string) => {
-    setStudents(students.filter(student => student.id !== studentId));
+  const handleRemoveBatchConfirm = (studentId: string, batchId: string) => {
+    setBatchToRemove({ studentId, batchId });
+  };
+  
+  const handleRemoveStudentConfirm = (studentId: string) => {
+    setStudentToRemove(studentId);
+  };
+
+  const confirmRemoveBatch = () => {
+    if (batchToRemove) {
+      removeBatch(batchToRemove);
+      setBatchToRemove(null); // Reset state
+    }
+  };
+  
+  const confirmRemoveStudent = () => {
+    if (studentToRemove) {
+      removeStudentMutation(studentToRemove);
+      setStudentToRemove(null); // Reset state
+    }
   };
 
   if (error) {
     return (
       <Card className="w-full bg-[#1E1E1E] border-[#8D6CCB]/20 mt-6">
         <CardContent className="p-6 text-center">
-          <p className="text-red-400">{error}</p>
+          <p className="text-red-400">Failed to load students. Please try again.</p>
           <Button 
-            onClick={() => window.location.reload()} 
+            onClick={() => refetch()} 
             className="mt-4 bg-[#8D6CCB]"
           >
             Retry
@@ -126,16 +98,17 @@ const StudentTable = () => {
         ) : (
           <Table className="border-collapse">
             <TableHeader>
-              <TableRow className="border-b border-[#6544A3]/30 bg-[#6544A3]/30 hover:bg-[#6544A3]/50">
+              <TableRow className="border-b border-[#6544A3]/30 bg-[#6544A3]/60 hover:bg-[#6544A3]/80 mr-4 ">
                 <TableHead className="text-[#A3A3A3] font-semibold">Student name</TableHead>
                 <TableHead className="text-[#A3A3A3] font-semibold">Email</TableHead>
                 <TableHead className="text-[#A3A3A3] font-semibold">Enrolled Date</TableHead>
-                <TableHead className="text-[#A3A3A3] font-semibold">Batches/classes</TableHead>
-                <TableHead className="text-[#A3A3A3] font-semibold text-right">Actions</TableHead>
+                <TableHead className="text-[#A3A3A3] font-semibold">Permission</TableHead>
+                <TableHead className="text-[#A3A3A3] font-semibold">Batches/Classes</TableHead>
+                <TableHead className="text-[#A3A3A3] font-semibold text-right pr-2 md:pr-6">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {students.map((student) => (
+              {students?.map((student) => (
                 <TableRow 
                   key={student.id} 
                   className="border-b border-[#6544A3]/20 hover:bg-[#6544A3]/10"
@@ -143,25 +116,45 @@ const StudentTable = () => {
                   <TableCell className="font-medium text-white">{student.name}</TableCell>
                   <TableCell className="text-[#A3A3A3]">{student.email}</TableCell>
                   <TableCell className="text-[#A3A3A3]">
-                    {new Date(student.enrolledDate).toLocaleDateString()}
+                    {formatDate(student.enrolledDate)}
                   </TableCell>
                   <TableCell>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex items-center space-x-2 h-6">
+                      <Switch
+                        checked={student.hasPermission}
+                        onCheckedChange={() => handlePermissionToggle(student.id, student.hasPermission)}
+                        className="data-[state=checked]:bg-green-500"
+                        disabled={isTogglingPermission && togglingStudentId === student.id}
+                      />
+                      <div className="min-w-24 inline-flex items-center h-full">
+                        {isTogglingPermission && togglingStudentId === student.id ? (
+                          <span className="flex items-center text-[#A3A3A3]">
+                            <Loader2 size={16} className="mr-1 animate-spin" /> Updating...
+                          </span>
+                        ) : student.hasPermission ? (
+                          <span className="flex items-center text-green-400">
+                            <Check size={16} className="mr-1" /> Permitted
+                          </span>
+                        ) : (
+                          <span className="flex items-center text-red-400">
+                            <XIcon size={16} className="mr-1" /> Restricted
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="max-w-[20rem] flex flex-wrap gap-2">
                       {student.batches.map((batch) => (
                         <Badge 
                           key={batch.id}
-                          className={`
-                            flex items-center gap-1 px-2 py-1 
-                            ${batch.type === 'batch' 
-                              ? 'bg-[#9000FF]/20 text-[#B091EA] hover:bg-[#9000FF]/30' 
-                              : 'bg-[#8BA0B1]/20 text-[#8BA0B1] hover:bg-[#8BA0B1]/30'
-                            }
-                          `}
+                          className=" flex items-center gap-1 px-2 py-1 bg-[#9000FF]/20 text-[#B091EA] hover:bg-[#9000FF]/30"
                         >
-                          {batch.name}
+                          {batch.name} {batch.boardName && `(${batch.boardName})`}
                           <button 
-                            onClick={() => handleRemoveBatch(student.id, batch.id)}
-                            className="ml-1 h-4 w-4 rounded-full hover:bg-[#6544A3]/30 flex items-center justify-center"
+                            onClick={() => handleRemoveBatchConfirm(student.id, batch.id)}
+                            className="ml-1 h-4 w-4 rounded-full hover:bg-[#6544A3]/30 flex items-center justify-center active:scale-105"
+                            disabled={isRemovingBatch}
                           >
                             <X size={12} />
                           </button>
@@ -172,9 +165,10 @@ const StudentTable = () => {
                   <TableCell className="text-right">
                     <Button
                       variant="destructive"
-                      size="sm"
-                      className="bg-red-500/20 hover:bg-red-500/30 text-red-300"
-                      onClick={() => handleRemoveStudent(student.id)}
+                      size="sm" 
+                      className="bg-red-500/20 hover:bg-red-500/30 text-red-300 active:scale-105"
+                      onClick={() => handleRemoveStudentConfirm(student.id)}
+                      disabled={isRemovingStudent}
                     >
                       Remove
                     </Button>
@@ -185,9 +179,70 @@ const StudentTable = () => {
           </Table>
         )}
       </CardContent>
+      
+      {/* Batch removal confirmation dialog */}
+      <AlertDialog open={!!batchToRemove} onOpenChange={(open) => !open && setBatchToRemove(null)}>
+        <AlertDialogContent className="bg-[#1E1E1E] border-[#8D6CCB]/20">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-white">Remove Batch</AlertDialogTitle>
+            <AlertDialogDescription className="text-[#A3A3A3]">
+              Are you sure you want to remove this batch/class from the student?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="bg-transparent text-white border-[#8D6CCB]/40 hover:bg-[#6544A3]/70 hover:text-white active:scale-105">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmRemoveBatch}
+              className="bg-red-500/20 hover:bg-red-500/30 text-red-300 active:scale-105"
+              disabled={isRemovingBatch}
+            >
+               {isRemovingBatch ? (
+    <>
+      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+      Removing...
+    </>
+  ) : (
+    "Remove"
+  )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Student removal confirmation dialog */}
+      <AlertDialog open={!!studentToRemove} onOpenChange={(open) => !open && setStudentToRemove(null)}>
+        <AlertDialogContent className="bg-[#1E1E1E] border-[#8D6CCB]/20">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-white">Remove Student</AlertDialogTitle>
+            <AlertDialogDescription className="text-[#A3A3A3]">
+              Are you sure you want to remove this student? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="bg-transparent text-white border-[#8D6CCB]/40 hover:bg-[#6544A3]/70 hover:text-white active:scale-105">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmRemoveStudent}
+              className="bg-red-500/20 hover:bg-red-500/30 text-red-300 active:scale-105"
+              disabled={isRemovingStudent}
+            >
+              {isRemovingStudent ? (
+    <>
+      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+      Removing...
+    </>
+  ) : (
+    "Remove"
+  )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   );
 }
-
 
 export default StudentTable;

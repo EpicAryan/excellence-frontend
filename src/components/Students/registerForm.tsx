@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { registerStudentAction } from '@/app/actions/auth.actions';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { Eye, EyeOff } from 'lucide-react';
 import { z } from 'zod';
@@ -25,9 +25,24 @@ const passwordSchema = z.string()
   .regex(/[0-9]/, "Password must contain at least one number")
   .regex(/[\W_]/, "Password must contain at least one special character");
 
+  interface FormData {
+    name: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
+  }
+  
+  // interface RegisterResponse {
+  //   success: boolean;
+  //   message?: string;
+  //   errors?: Record<string, string[]>;
+  // }
 
 const RegisterForm = () =>{
-  const [formData, setFormData] = useState({
+
+  const queryClient = useQueryClient();
+
+  const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
     password: '',
@@ -97,6 +112,7 @@ const RegisterForm = () =>{
           confirmPassword: ''
         });
         setFormErrors({});
+        queryClient.invalidateQueries({ queryKey: ['students'] });
       } else {
         setFormErrors(result.errors || {});
         toast.error(result.message || "Registration failed");

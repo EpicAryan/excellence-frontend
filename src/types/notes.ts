@@ -48,6 +48,21 @@ interface UserType {
     username: string;
   }
 
+  interface Batch {
+    id: string;
+    name: string;
+    boardName?: string;
+  }
+  
+  interface Student {
+    id: string;
+    name: string;
+    email: string;
+    enrolledDate: string;
+    hasPermission: boolean;
+    batches: Batch[];
+  }
+
 export type {
     BoardType,
     ClassType,
@@ -55,5 +70,6 @@ export type {
     ChapterType,
     Topic,
     FilterOption,
-    UserType
+    UserType,
+    Student
 };

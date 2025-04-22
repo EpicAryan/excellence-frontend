@@ -1,7 +1,7 @@
 'use client'
 
 import { useState} from 'react';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -27,6 +27,9 @@ import { UserType } from '@/types/notes';
 import { toast } from 'sonner';
 
 const SearchSection = () => {
+
+  const queryClient = useQueryClient();
+  
   const [searchData, setSearchData] = useState({
     email: '',
     name: '',
@@ -65,6 +68,7 @@ const SearchSection = () => {
       setSelectedClasses([]);
       setSelectedUser(null);
       setSearchData({ email: '', name: '' });
+      queryClient.invalidateQueries({ queryKey: ['students'] });
     },
     onError: (error: Error) => {
       toast.error(`Error: ${error.message}`);
