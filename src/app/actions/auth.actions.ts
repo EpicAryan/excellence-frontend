@@ -3,6 +3,7 @@
 import { cookies } from 'next/headers'
 import { jwtDecode } from 'jwt-decode'
 import { z } from "zod";
+import { getAccessToken } from './notes.actions';
 
 const signUpSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
@@ -166,6 +167,40 @@ export async function registerStudentAction(formData: {
     return {
       success: false,
       message: "Failed to connect to the server"
+    };
+  }
+}
+
+
+export async function logoutAction(): Promise<{ success: boolean, message: string }> {
+  try {
+    const cookieStore = await cookies();
+    const sessionId = cookieStore.get('sessionId')?.value;
+    const accessToken = await getAccessToken();
+    if (!sessionId) {
+      return { success: false, message: 'No active session' };
+    }
+    const response = await fetch(`${process.env.NEXT_BACKEND_API_URL}/api/auth/logout`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`
+      },
+      credentials: 'include',
+      body: JSON.stringify({ sessionId }),
+    });
+    cookieStore.delete('sessionId');
+    cookieStore.delete('accessToken');
+    const data = await response.json();
+    return {
+      success: response.ok,
+      message: data.message || 'Logout successful',
+    };
+  } catch (error) {
+    console.error('Logout action error:', error);
+    return {
+      success: false,
+      message: 'An unexpected error occurred',
     };
   }
 }

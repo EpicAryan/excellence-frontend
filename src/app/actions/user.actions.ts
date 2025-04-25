@@ -2,6 +2,7 @@
 
 import { UserType } from "@/types/notes";
 import { getAccessToken } from "./notes.actions";
+import { cookies } from 'next/headers';
 
 const API_URL = process.env.NEXT_BACKEND_API_URL;
 
@@ -53,3 +54,35 @@ export async function searchUsers(query: string): Promise<UserType[]> {
       throw error;
     }
   }
+
+  export async function getUserAction(): Promise<UserType | null> {
+    try {
+      const cookieStore = await cookies();
+      const accessToken = cookieStore.get('accessToken')?.value;
+  
+      if (!accessToken) {
+        return null;
+      }
+  
+      const response = await fetch(`${process.env.NEXT_BACKEND_API_URL}/api/auth/me`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Cookie: `accessToken=${accessToken}`,
+        },
+        credentials: 'include',
+        cache: 'no-store',
+      });
+  
+      if (!response.ok) {
+        return null;
+      }
+  
+      const data = await response.json();
+      return data.user as UserType;
+    } catch (error) {
+      console.error('Error in getUserAction:', error);
+      return null;
+    }
+  }
+  
