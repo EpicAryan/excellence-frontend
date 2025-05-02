@@ -87,7 +87,7 @@ const AppSidebar = () => {
 
     // Navigation functions
     const navigateToSubject = (classId: number, subjectId: number) => {
-        router.push(`courses/classes/${classId}/subjects/${subjectId}`);
+        router.push(`/courses/${classId}/subjects/${subjectId}`);
     };
 
     return (
