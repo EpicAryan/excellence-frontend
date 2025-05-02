@@ -2,12 +2,12 @@
 
 import { Home, LogOut, User, Upload, FileText, UserPlus } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useMutation, useQueryClient  } from "@tanstack/react-query";
+// import { useRouter } from "next/navigation";
+// import { useMutation, useQueryClient  } from "@tanstack/react-query";
 import { useUser } from "@/hooks/useUser"; 
-import { logoutAction } from "@/app/actions/auth.actions"; 
-import { toast } from 'sonner';
-import { deleteCookie } from 'cookies-next'; 
+// import { logoutAction } from "@/app/actions/auth.actions"; 
+// import { toast } from 'sonner';
+// import { deleteCookie } from 'cookies-next'; 
 
 import {
     Sidebar,
@@ -19,6 +19,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { useLogout } from "@/hooks/useLogout";
 
 
 
@@ -43,34 +44,33 @@ const sidebarItems = [
 
 
 const AdminSidebar = () => {
-    const router = useRouter();
-    const queryClient = useQueryClient();
+    // const router = useRouter();
+    // const queryClient = useQueryClient();
     const { data: user, isLoading } = useUser();
 
-    const logoutMutation = useMutation({
-        mutationFn: logoutAction,
-        onSuccess: (data) => {
-            console.log("Logout response:", data);
-            if (data.success) {
-                deleteCookie('accessToken');
-                deleteCookie('sessionId');
-                queryClient.removeQueries({ queryKey: ['user'] });
-                toast.success("User logged out successfully!")
-                setTimeout(() => {
-                    router.push('/auth/login');
-                }, 100);
-            }else {
-                toast.error(data.message || "Logout failed");
-            }
-        },
-        onError: (err) => {
-            console.error("Logout failed", err);
-            toast.error(`Error: ${err}`);
-        }
-    });
+    // const logoutMutation = useMutation({
+    //     mutationFn: logoutAction,
+    //     onSuccess: (data) => {
+    //         if (data.success) {
+    //             deleteCookie('accessToken');
+    //             deleteCookie('sessionId');
+    //             queryClient.removeQueries({ queryKey: ['user'] });
+    //             toast.success("User logged out successfully!")
+    //             setTimeout(() => {
+    //                 router.push('/auth/login');
+    //             }, 100);
+    //         }else {
+    //             toast.error(data.message || "Logout failed");
+    //         }
+    //     },
+    //     onError: (err) => {
+    //         toast.error(`Error: ${err}`);
+    //     }
+    // });
 
+    const { mutate: logout, isPending } = useLogout();
     const handleLogout = () => {
-        logoutMutation.mutate();
+        logout();
     };
     
     
@@ -144,10 +144,10 @@ const AdminSidebar = () => {
                 <button
                     onClick={handleLogout}
                     className="w-full flex items-center justify-center border border-[#8D6CCB] bg-gray-300 gap-2 py-2 px-3 text-red-600 font-semibold hover:bg-red-500 hover:text-gray-200 rounded-md"
-                    disabled={logoutMutation.isPending}
+                    disabled={isPending}
                 >
                     <LogOut className="h-4 w-4" />
-                    <span>{logoutMutation.isPending ? "Logging out..." : "Logout"}</span>
+                    <span>{isPending ? "Logging out..." : "Logout"}</span>
                 </button>
             </SidebarFooter>
         </Sidebar>

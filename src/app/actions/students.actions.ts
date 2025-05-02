@@ -2,6 +2,7 @@
 
 import { getAccessToken } from "./notes.actions";
 import { Student } from "@/types/notes";
+import { Class } from "@/types/studentNotes"
 
 const API_URL = process.env.NEXT_BACKEND_API_URL;
 
@@ -95,5 +96,33 @@ export async function removeStudent(studentId: string): Promise<void> {
   } catch (error) {
     console.error('Error removing student:', error);
     throw error;
+  }
+}
+
+export async function getStudentCourse(studentId: number|undefined): Promise<Class[]> {
+  try {
+    const accessToken = await getAccessToken();
+    if (!accessToken) {
+      throw new Error('Not authenticated');
+    }
+    
+    // Call your backend API to get complete course hierarchy
+    const response = await fetch(`${API_URL}/api/students/course/${studentId}`, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to fetch course hierarchy');
+    }
+    
+    const data = await response.json();
+
+    return data;
+  } catch (error) {
+    console.error('Error fetching course hierarchy:', error);
+    return [];
   }
 }

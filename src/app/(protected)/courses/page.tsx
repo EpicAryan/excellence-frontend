@@ -1,14 +1,62 @@
+'use client';
 
-import React from 'react'
-import { CourseSection } from '@/components'
-const UserPage = () => {
+import { useQuery } from "@tanstack/react-query";
+import { getStudentCourse } from "@/app/actions/students.actions";
+import { ClassCard } from "@/components/CourseSection/classCard";
+import { useUser } from "@/hooks/useUser";
+import { Loader2 } from "lucide-react";
+
+export default function CoursePage() {
+  const { data: user } = useUser();
+  
+  const { data: userClasses, isLoading } = useQuery({
+    queryKey: ["userCourse", user?.id],
+    queryFn: () => getStudentCourse(user?.id),
+    enabled: !!user,
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-[70vh]">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-12 w-12 animate-spin text-[#8D6CCB]" />
+          <p className="text-lg font-medium text-gray-600">Loading your courses...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!userClasses || userClasses.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-[70vh]">
+        <div className="text-center max-w-md mx-auto p-8 bg-white rounded-xl shadow-md">
+          <h2 className="text-xl font-bold text-[#6544A3] mb-4">No Courses Found</h2>
+          <p className="text-gray-600">You don&apos;t have any courses assigned yet. Please contact your administrator.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="mt-10">
-          <h1 className="text-3xl font-bold text-gradient-800 text-center mb-8">Explore Our Curated Notes</h1>
-         <CourseSection/>
-    </div>
-  )
-}
+    <div className="container mx-auto p-6">
+      <div className="text-center">
+        <h1 className="text-3xl font-bold mb-8 bg-gradient-to-r from-purple-600 via-purple-500 to-pink-500 bg-clip-text text-transparent inline-block">
+          My Courses
+        </h1>
+      </div>
 
-export default UserPage
+      
+      <div className="space-y-8">
+        {userClasses.map((classItem) => (
+          <ClassCard
+            key={classItem.classId}
+            classId={classItem.classId}
+            className={classItem.className}
+            board={classItem.board}
+            subjects={classItem.subjects}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}

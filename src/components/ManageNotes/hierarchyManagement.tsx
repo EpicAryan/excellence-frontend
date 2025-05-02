@@ -533,7 +533,7 @@ export default function HierarchyManagement() {
                                             >
                                                 {editId ===
                                                     String(board.boardId) &&
-                                                editType === "board" ? (
+                                                    editType === "board" ? (
                                                     <div className="flex items-center gap-2 flex-1">
                                                         <Input
                                                             value={editName}
@@ -609,7 +609,7 @@ export default function HierarchyManagement() {
                                                                 }
                                                             >
                                                                 {deleteBoardMutation.isPending &&
-                                                                deleteBoardMutation.variables ===
+                                                                    deleteBoardMutation.variables ===
                                                                     board.boardId ? (
                                                                     <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                                                                 ) : (
@@ -758,7 +758,7 @@ export default function HierarchyManagement() {
                                                             String(
                                                                 cls.classId
                                                             ) &&
-                                                        editType === "class" ? (
+                                                            editType === "class" ? (
                                                             <div className="flex items-center gap-2 flex-1">
                                                                 <Input
                                                                     value={
@@ -853,7 +853,7 @@ export default function HierarchyManagement() {
                                                                         }
                                                                     >
                                                                         {deleteClassMutation.isPending &&
-                                                                        deleteClassMutation.variables ===
+                                                                            deleteClassMutation.variables ===
                                                                             cls.classId ? (
                                                                             <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                                                                         ) : (
@@ -1059,7 +1059,7 @@ export default function HierarchyManagement() {
                                                             String(
                                                                 subject.subjectId
                                                             ) &&
-                                                        editType ===
+                                                            editType ===
                                                             "subject" ? (
                                                             <div className="flex items-center gap-2 flex-1">
                                                                 <Input
@@ -1155,7 +1155,7 @@ export default function HierarchyManagement() {
                                                                         }
                                                                     >
                                                                         {deleteSubjectMutation.isPending &&
-                                                                        deleteSubjectMutation.variables ===
+                                                                            deleteSubjectMutation.variables ===
                                                                             subject.subjectId ? (
                                                                             <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                                                                         ) : (
@@ -1414,7 +1414,7 @@ export default function HierarchyManagement() {
                                                             String(
                                                                 chapter.chapterId
                                                             ) &&
-                                                        editType ===
+                                                            editType ===
                                                             "chapter" ? (
                                                             <div className="flex items-center gap-2 flex-1">
                                                                 <Input
@@ -1510,7 +1510,7 @@ export default function HierarchyManagement() {
                                                                         }
                                                                     >
                                                                         {deleteChapterMutation.isPending &&
-                                                                        deleteChapterMutation.variables ===
+                                                                            deleteChapterMutation.variables ===
                                                                             chapter.chapterId ? (
                                                                             <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                                                                         ) : (
@@ -1582,12 +1582,12 @@ export default function HierarchyManagement() {
                         >
                             {(deleteItemInfo.type === "board" &&
                                 deleteBoardMutation.isPending) ||
-                            (deleteItemInfo.type === "class" &&
-                                deleteClassMutation.isPending) ||
-                            (deleteItemInfo.type === "subject" &&
-                                deleteSubjectMutation.isPending) ||
-                            (deleteItemInfo.type === "chapter" &&
-                                deleteChapterMutation.isPending) ? (
+                                (deleteItemInfo.type === "class" &&
+                                    deleteClassMutation.isPending) ||
+                                (deleteItemInfo.type === "subject" &&
+                                    deleteSubjectMutation.isPending) ||
+                                (deleteItemInfo.type === "chapter" &&
+                                    deleteChapterMutation.isPending) ? (
                                 <span className="flex items-center">
                                     <div className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-white border-t-transparent" />
                                     Deleting...
@@ -1629,12 +1629,12 @@ export default function HierarchyManagement() {
                         >
                             {(editItemInfo.type === "board" &&
                                 updateBoardMutation.isPending) ||
-                            (editItemInfo.type === "class" &&
-                                updateClassMutation.isPending) ||
-                            (editItemInfo.type === "subject" &&
-                                updateSubjectMutation.isPending) ||
-                            (editItemInfo.type === "chapter" &&
-                                updateChapterMutation.isPending) ? (
+                                (editItemInfo.type === "class" &&
+                                    updateClassMutation.isPending) ||
+                                (editItemInfo.type === "subject" &&
+                                    updateSubjectMutation.isPending) ||
+                                (editItemInfo.type === "chapter" &&
+                                    updateChapterMutation.isPending) ? (
                                 <span className="flex items-center">
                                     <div className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-white border-t-transparent" />
                                     Saving...
