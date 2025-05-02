@@ -115,14 +115,20 @@ export async function getStudentCourse(studentId: number|undefined): Promise<Cla
     });
     
     if (!response.ok) {
-      throw new Error('Failed to fetch course hierarchy');
+      if (response.status === 403) {
+        console.error('Permission Denied: You do not have access to view this course data.');
+        return [];
+      } else {
+        console.error('Failed to fetch course hierarchy');
+        return [];
+      }
     }
     
     const data = await response.json();
 
     return data;
   } catch (error) {
-    console.error('Error fetching course hierarchy:', error);
+    console.error('Error:', error);
     return [];
   }
 }

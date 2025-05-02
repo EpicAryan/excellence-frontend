@@ -6,7 +6,10 @@ import { useMutation } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { loginAction, getUserRoleFromToken } from '@/app/actions/auth.actions'
 import { toast } from "sonner";
-
+import { queryClient } from '@/lib/queryClient';
+import { getUserAction } from '@/app/actions/user.actions';
+import { jwtDecode } from 'jwt-decode'
+import { getStudentCourse } from '@/app/actions/students.actions';
 
 interface LoginFormInputs {
   email: string;
@@ -33,15 +36,30 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
     },
     onSuccess: async (response, variables) => {
       if (response.success && response.accessToken) {
-        // Get user role from the token
+        const decodedUser = jwtDecode<{ id: string }>(response.accessToken);
         const role = await getUserRoleFromToken(response.accessToken)
-        console.log("User role: ", role);
+        const userId = decodedUser?.id;
+
+        await queryClient.prefetchQuery({
+          queryKey: ['user'], 
+          queryFn: getUserAction,
+        });
+
+        if (userId) {
+  
+          await queryClient.prefetchQuery({
+            queryKey: ["userCourse", userId],
+            queryFn: () => getStudentCourse(Number(userId)),
+          });
+        }
+        
         toast.success("Login successful!");
-        // Redirect based on role
         if (role === 'admin') {
           router.push('/admin')
         } else {
-          router.push('/courses')
+          setTimeout(() => {
+            router.push('/courses');
+          }, 500);
         }
         
         if (onSuccess) onSuccess(variables)
