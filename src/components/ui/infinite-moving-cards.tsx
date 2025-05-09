@@ -93,21 +93,21 @@ export const InfiniteMovingCards = ({
           >
             <div className="w-full h-full flex flex-col gap-2">
 
-            <div className="h-1/2 rounded-2xl overflow-hidden">
+            <div className="h-1/2 rounded-2xl overflow-hidden ">
                 <Image
                 src={item.img} 
                 alt={item.title}
                 width={280} 
                 height={180} 
-                className="w-full h-full object-cover rounded-2xl"
+                className="w-full h-full object-fill rounded-2xl"
                 />
             </div>
               <div className="h-1/2 flex flex-col justify-around mb-1">
-                <h2 className="font-bold text-sm lg:text-lg  underline underline-offset-2 text-center">
+                <h2 className="font-bold text-sm lg:text-base  text-center">
                     {item.title}
                 </h2>
-                <p className="font-light text-xs lg:text-sm px-1 line-clamp-2">{item.quote}</p>
-                <button className="w-full py-1 text-xs lg:text-base bg-buttontag rounded-md shadow[0px_4px_4px_rgba(217,217,217,1)]">
+                <p className="font-light text-xs lg:text-sm px-1 line-clamp-2 text-gray-200">{item.quote}</p>
+                <button className="w-full py-1 text-xs lg:text-base bg-buttontag rounded-md shadow[0px_4px_4px_rgba(217,217,217,1)] hover:bg-purple-500 active:scale-95">
                     View Notes
                 </button>
               </div>

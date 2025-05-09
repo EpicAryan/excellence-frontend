@@ -16,9 +16,9 @@ import {
 const socialIcons = [
   { icon: FaFacebook, link: "https://facebook.com", color: "hover:text-blue-800" },
   { icon: FaTwitter, link: "https://twitter.com", color: "hover:text-blue-400" },
-  { icon: FaInstagram, link: "https://instagram.com", color: "hover:text-pink-600" },
+  { icon: FaInstagram, link: "https://instagram.com/excellence_pathshala?igsh=MTBnZXV0YjE4eDhncw==", color: "hover:text-pink-600" },
   { icon: FaLinkedin, link: "https://linkedin.com", color: "hover:text-blue-600" },
-  { icon: FaYoutube, link: "https://youtube.com", color: "hover:text-red-600" },
+  { icon: FaYoutube, link: "https://youtube.com/channel/UCivTadsCdplrlFQNJjNOmcQ", color: "hover:text-red-600" },
 ];
 
 const Footer = () => {
@@ -58,11 +58,11 @@ const Footer = () => {
           <ul className="space-y-3 text-sm text-gray-700">
             <li className="flex items-center justify-center md:justify-start">
               <FaMapMarkerAlt className="mr-3 text-[#8F63E0]" />
-              123 Education Street, Learning City
+              Vidyasagar Park, Mollargate, Maheshtala, Kolkata - 700142
             </li>
             <li className="flex items-center justify-center md:justify-start">
               <FaPhone className="mr-3 text-[#8F63E0]" />
-              +91 98765 43210
+              +91 7003557063
             </li>
             <li className="flex items-center justify-center md:justify-start">
               <FaEnvelope className="mr-3 text-[#8F63E0]" />
@@ -70,7 +70,7 @@ const Footer = () => {
             </li>
             <li className="flex items-center justify-center md:justify-start">
               <FaClock className="mr-3 text-[#8F63E0]" />
-              Mon - Sat: 9:00 AM - 6:00 PM
+              Mon - Sun: 9:00 AM - 9:00 PM
             </li>
           </ul>
         </div>
@@ -79,19 +79,33 @@ const Footer = () => {
         <div className="text-center md:text-left">
           <h2 className="text-2xl font-bold mb-4">Connect With Us</h2>
           <div className="flex justify-center md:justify-start space-x-4 mb-6">
-            {socialIcons.map(({ icon: Icon, link, color }, idx) => (
-              <motion.a
-                key={idx}
-                href={link}
-                target="_blank"
-                rel="noopener noreferrer"
-                whileHover={{ scale: 1.2, rotate: 5 }}
-                transition={{ type: "spring", stiffness: 300 }}
-                className={`text-[#8F63E0] ${color} text-xl`}
-              >
-                <Icon />
-              </motion.a>
-            ))}
+            {socialIcons.map(({ icon: Icon, link, color }, idx) => {
+              const isActive = link.includes("youtube") || link.includes("instagram");
+
+              return isActive ? (
+                <motion.a
+                  key={idx}
+                  href={link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  whileHover={{ scale: 1.2, rotate: 5 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                  className={`text-[#8F63E0] ${color} text-xl`}
+                >
+                  <Icon />
+                </motion.a>
+              ) : (
+                <motion.span
+                  key={idx}
+                  whileHover={{ scale: 1.2, rotate: 5 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                  className={`text-[#8F63E0] ${color} text-xl cursor-not-allowed`}
+                >
+                  <Icon />
+                </motion.span>
+              );
+            })}
+
           </div>
 
           {/* Email */}

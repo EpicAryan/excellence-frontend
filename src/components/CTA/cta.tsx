@@ -56,8 +56,10 @@ const CTA = () => {
                     <div className='relative h-full flex flex-col p-5 lg:p-5 rounded-xl gap-6'>
                         <h2 className='text-lg lg:text-xl font-semibold lg:font-bold text-center'>Scan to get the location</h2>
                         <Image 
-                            src={about}
+                            src="https://res.cloudinary.com/dmvfmpkb9/image/upload/v1746789805/course%20card%20images/Untitled_1_eueno1.png"
                             alt='profile picture'
+                            width={100}
+                            height={100}
                             className='rounded-md w-full h-full lg:w-2/3 lg:h-2/3 place-self-end drop-shadow-[2px_2px_2px_rgba(238,238,238,1)] lg:mr-6 lg:mt-1'
                         />
                         <CtaLineSvg className='hidden lg:block w-10  absolute translate-y-1/2 translate-x-1/2'/>

@@ -42,7 +42,9 @@ const HeroSection = () => {
                         <div className='bg-bigbutton px-8 py-3 rounded-l-md '>
                             Get Your Tutor Now
                         </div>
-                        <button className='bg-bigbutton border-l-[1px] border-gray-300 px-8 py-3 rounded-r-md text-[#B091EA] hover:text-[#9057FA]'>
+                        <button 
+                            onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })}
+                            className='bg-bigbutton border-l-[1px] border-gray-300 px-8 py-3 rounded-r-md text-[#B091EA] hover:text-[#9057FA]'>
                             <span>Click here</span>
                         </button>
                     </div>
