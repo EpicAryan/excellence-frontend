@@ -20,27 +20,25 @@ import {
 import FileUpload from "./fileUpload";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
-import { BoardType, ClassType, SubjectType, ChapterType } from "@/types/notes";
-// Import server actions
+import { 
+    BoardType, 
+    ClassType, 
+    SubjectType, 
+    ChapterType,
+    HierarchyBoardType 
+} from "@/types/notes";
 import {
     fetchBoards,
-    fetchClasses,
-    fetchSubjects,
-    fetchChapters,
+    fetchBoardHierarchy,
     uploadNotes,
 } from "@/app/actions/notes.actions";
 import { toast } from "sonner";
 
 const NotesUploadDashboard = () => {
-    // States for form data
     const [selectedBoardId, setSelectedBoardId] = useState<number | null>(null);
     const [selectedClassId, setSelectedClassId] = useState<number | null>(null);
-    const [selectedSubjectId, setSelectedSubjectId] = useState<number | null>(
-        null
-    );
-    const [selectedChapterId, setSelectedChapterId] = useState<number | null>(
-        null
-    );
+    const [selectedSubjectId, setSelectedSubjectId] = useState<number | null>(null);
+    const [selectedChapterId, setSelectedChapterId] = useState<number | null>(null);
     const [selectedBoardName, setSelectedBoardName] = useState<string>("");
     const [selectedClassName, setSelectedClassName] = useState<string>("");
     const [selectedSubjectName, setSelectedSubjectName] = useState<string>("");
@@ -49,6 +47,10 @@ const NotesUploadDashboard = () => {
     const [file, setFile] = useState<File | null>(null);
     const [error, setError] = useState<string | null>(null);
 
+    const [availableClasses, setAvailableClasses] = useState<ClassType[]>([]);
+    const [availableSubjects, setAvailableSubjects] = useState<SubjectType[]>([]);
+    const [availableChapters, setAvailableChapters] = useState<ChapterType[]>([]);
+
     const {
         data: boards = [],
         isLoading: isLoadingBoards,
@@ -56,97 +58,101 @@ const NotesUploadDashboard = () => {
     } = useQuery<BoardType[]>({
         queryKey: ["boards"],
         queryFn: fetchBoards,
+        staleTime: 1000 * 60 * 10, 
+    });
+
+    const {
+        data: hierarchy = [],
+        isLoading: isLoadingHierarchy,
+        isError: isHierarchyError,
+    } = useQuery<HierarchyBoardType[]>({
+        queryKey: ["boardHierarchy", selectedBoardId],
+        queryFn: () => fetchBoardHierarchy(selectedBoardId || undefined),
+        enabled: !!selectedBoardId,
         staleTime: 1000 * 60 * 10, // 10 minutes
     });
 
-    const {
-        data: classes = [],
-        isLoading: isLoadingClasses,
-        isError: isClassesError,
-    } = useQuery<ClassType[]>({
-        queryKey: ["classes", selectedBoardId],
-        queryFn: () =>
-            selectedBoardId
-                ? fetchClasses(selectedBoardId)
-                : Promise.resolve([]),
-        enabled: !!selectedBoardId,
-        staleTime: 1000 * 60 * 10,
-    });
+    useEffect(() => {
+        if (hierarchy.length > 0 && selectedBoardId) {
+            const currentBoard = hierarchy.find(b => b.boardId === selectedBoardId);
+            if (currentBoard) {
+                setAvailableClasses(currentBoard.classes);
+            } else {
+                setAvailableClasses([]);
+            }
+        }
+    }, [hierarchy, selectedBoardId]);
 
-    const {
-        data: subjects = [],
-        isLoading: isLoadingSubjects,
-        isError: isSubjectsError,
-    } = useQuery<SubjectType[]>({
-        queryKey: ["subjects", selectedBoardId, selectedClassId],
-        queryFn: () =>
-            selectedBoardId && selectedClassId
-                ? fetchSubjects(selectedBoardId, selectedClassId)
-                : Promise.resolve([]),
-        enabled: !!selectedBoardId && !!selectedClassId,
-        staleTime: 1000 * 60 * 10,
-    });
+    useEffect(() => {
+        if (selectedClassId && availableClasses.length > 0) {
+            const currentClass = availableClasses.find(c => c.classId === selectedClassId);
+            if (currentClass && currentClass.subjects) {
+                setAvailableSubjects(currentClass.subjects);
+            } else {
+                setAvailableSubjects([]);
+            }
+        } else {
+            setAvailableSubjects([]);
+        }
+    }, [availableClasses, selectedClassId]);
 
-    const {
-        data: chapters = [],
-        isLoading: isLoadingChapters,
-        isError: isChaptersError,
-    } = useQuery<ChapterType[]>({
-        queryKey: [
-            "chapters",
-            selectedBoardId,
-            selectedClassId,
-            selectedSubjectId,
-        ],
-        queryFn: () =>
-            selectedBoardId && selectedClassId && selectedSubjectId
-                ? fetchChapters(
-                      selectedBoardId,
-                      selectedClassId,
-                      selectedSubjectId
-                  )
-                : Promise.resolve([]),
-        enabled: !!selectedBoardId && !!selectedClassId && !!selectedSubjectId,
-        staleTime: 1000 * 60 * 10,
-    });
+    useEffect(() => {
+        if (selectedSubjectId && availableSubjects.length > 0) {
+            const currentSubject = availableSubjects.find(s => s.subjectId === selectedSubjectId);
+            if (currentSubject && currentSubject.chapters) {
+                setAvailableChapters(currentSubject.chapters);
+            } else {
+                setAvailableChapters([]);
+            }
+        } else {
+            setAvailableChapters([]);
+        }
+    }, [availableSubjects, selectedSubjectId]);
 
-    // Handle board selection
     const handleBoardChange = (boardName: string) => {
         const board = boards.find((b) => b.boardName === boardName);
         if (board) {
             setSelectedBoardId(board.boardId);
             setSelectedBoardName(boardName);
+            setSelectedClassId(null);
+            setSelectedClassName("");
+            setSelectedSubjectId(null);
+            setSelectedSubjectName("");
+            setSelectedChapterId(null);
+            setSelectedChapterName("");
         }
     };
 
-    // Handle class selection
     const handleClassChange = (className: string) => {
-        const classItem = classes.find((c) => c.className === className);
+        const classItem = availableClasses.find((c) => c.className === className);
         if (classItem) {
             setSelectedClassId(classItem.classId);
             setSelectedClassName(className);
+            setSelectedSubjectId(null);
+            setSelectedSubjectName("");
+            setSelectedChapterId(null);
+            setSelectedChapterName("");
         }
     };
 
-    // Handle subject selection
     const handleSubjectChange = (subjectName: string) => {
-        const subject = subjects.find((s) => s.subjectName === subjectName);
+        const subject = availableSubjects.find((s) => s.subjectName === subjectName);
         if (subject) {
             setSelectedSubjectId(subject.subjectId);
             setSelectedSubjectName(subjectName);
+            setSelectedChapterId(null);
+            setSelectedChapterName("");
         }
     };
 
-    // Handle chapter selection
     const handleChapterChange = (chapterName: string) => {
-        const chapter = chapters.find((c) => c.chapterName === chapterName);
+        const chapter = availableChapters.find((c) => c.chapterName === chapterName);
         if (chapter) {
             setSelectedChapterId(chapter.chapterId);
             setSelectedChapterName(chapterName);
         }
     };
 
-    // Upload mutation
     const uploadMutation = useMutation({
         mutationFn: (formData: FormData) => uploadNotes(formData),
         onSuccess: () => {
@@ -180,18 +186,16 @@ const NotesUploadDashboard = () => {
         }
 
         try {
-            // Validate file size (25MB limit)
+            // Validate file size (50MB limit)
             if (file.size > 50 * 1024 * 1024) {
-                setError("File size exceeds 10MB limit");
+                setError("File size exceeds 50MB limit");
                 return;
             }
 
             const formData = new FormData();
             formData.append("topicName", topicName);
             formData.append("chapterId", selectedChapterId.toString());
-
             formData.append("file", file);
-
             formData.append("isActive", "true");
 
             uploadMutation.mutate(formData);
@@ -203,34 +207,6 @@ const NotesUploadDashboard = () => {
             );
         }
     };
-
-    // Reset dependent fields when parent selection changes
-    useEffect(() => {
-        if (!selectedBoardId) {
-            setSelectedClassId(null);
-            setSelectedClassName("");
-            setSelectedSubjectId(null);
-            setSelectedSubjectName("");
-            setSelectedChapterId(null);
-            setSelectedChapterName("");
-        }
-    }, [selectedBoardId]);
-
-    useEffect(() => {
-        if (!selectedClassId) {
-            setSelectedSubjectId(null);
-            setSelectedSubjectName("");
-            setSelectedChapterId(null);
-            setSelectedChapterName("");
-        }
-    }, [selectedClassId]);
-
-    useEffect(() => {
-        if (!selectedSubjectId) {
-            setSelectedChapterId(null);
-            setSelectedChapterName("");
-        }
-    }, [selectedSubjectId]);
 
     return (
         <Card className="w-full max-w-4xl mx-auto bg-neutral-900/80 border-none shadow-lg mt-10">
@@ -298,10 +274,10 @@ const NotesUploadDashboard = () => {
                             <Select
                                 value={selectedClassName}
                                 onValueChange={handleClassChange}
-                                disabled={!selectedBoardId || isLoadingClasses}
+                                disabled={!selectedBoardId || isLoadingHierarchy}
                             >
                                 <SelectTrigger className="bg-[#3B444B]/50 text-white border-[#6544A3] h-12">
-                                    {isLoadingClasses ? (
+                                    {isLoadingHierarchy ? (
                                         <div className="flex items-center">
                                             <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                                             <span>Loading...</span>
@@ -311,12 +287,12 @@ const NotesUploadDashboard = () => {
                                     )}
                                 </SelectTrigger>
                                 <SelectContent className="bg-[#1E1E1E] text-white border-[#6544A3]">
-                                    {isClassesError ? (
+                                    {isHierarchyError ? (
                                         <SelectItem value="error" disabled>
                                             Error loading classes
                                         </SelectItem>
                                     ) : (
-                                        classes.map((classItem) => (
+                                        availableClasses.map((classItem) => (
                                             <SelectItem
                                                 key={classItem.classId}
                                                 value={classItem.className}
@@ -337,10 +313,10 @@ const NotesUploadDashboard = () => {
                             <Select
                                 value={selectedSubjectName}
                                 onValueChange={handleSubjectChange}
-                                disabled={!selectedClassId || isLoadingSubjects}
+                                disabled={!selectedClassId || isLoadingHierarchy}
                             >
                                 <SelectTrigger className="bg-[#3B444B]/50 text-white border-[#6544A3] h-12">
-                                    {isLoadingSubjects ? (
+                                    {isLoadingHierarchy && !availableSubjects.length ? (
                                         <div className="flex items-center">
                                             <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                                             <span>Loading...</span>
@@ -350,12 +326,12 @@ const NotesUploadDashboard = () => {
                                     )}
                                 </SelectTrigger>
                                 <SelectContent className="bg-[#1E1E1E] text-white border-[#6544A3]">
-                                    {isSubjectsError ? (
+                                    {isHierarchyError ? (
                                         <SelectItem value="error" disabled>
                                             Error loading subjects
                                         </SelectItem>
                                     ) : (
-                                        subjects.map((subject) => (
+                                        availableSubjects.map((subject) => (
                                             <SelectItem
                                                 key={subject.subjectId}
                                                 value={subject.subjectName}
@@ -376,12 +352,10 @@ const NotesUploadDashboard = () => {
                             <Select
                                 value={selectedChapterName}
                                 onValueChange={handleChapterChange}
-                                disabled={
-                                    !selectedSubjectId || isLoadingChapters
-                                }
+                                disabled={!selectedSubjectId || isLoadingHierarchy}
                             >
                                 <SelectTrigger className="bg-[#3B444B]/50 text-white border-[#6544A3] h-12">
-                                    {isLoadingChapters ? (
+                                    {isLoadingHierarchy && !availableChapters.length ? (
                                         <div className="flex items-center">
                                             <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                                             <span>Loading...</span>
@@ -391,12 +365,12 @@ const NotesUploadDashboard = () => {
                                     )}
                                 </SelectTrigger>
                                 <SelectContent className="bg-[#1E1E1E] text-white border-[#6544A3]">
-                                    {isChaptersError ? (
+                                    {isHierarchyError ? (
                                         <SelectItem value="error" disabled>
                                             Error loading chapters
                                         </SelectItem>
                                     ) : (
-                                        chapters.map((chapter) => (
+                                        availableChapters.map((chapter) => (
                                             <SelectItem
                                                 key={chapter.chapterId}
                                                 value={chapter.chapterName}

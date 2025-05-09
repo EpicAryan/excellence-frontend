@@ -6,7 +6,8 @@ import {
     BoardType,
     ClassType,
     SubjectType,
-    ChapterType
+    ChapterType,
+    HierarchyBoardType
   } from '@/types/notes'
 import { cookies } from 'next/headers';
 
@@ -447,6 +448,30 @@ export async function deleteChapter(id: number): Promise<void> {
     }
   } catch (error) {
     console.error('Error deleting chapter:', error);
+    throw error;
+  }
+}
+
+export async function fetchBoardHierarchy(boardId?: number): Promise<HierarchyBoardType[]> {
+  try {
+    const accessToken = await getAccessToken();
+    const queryParam = boardId ? `?boardId=${boardId}` : '';
+    const response = await fetch(`${API_URL}/api/boards/hierarchy${queryParam}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`
+      },
+      cache: 'no-store',
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch board hierarchy: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching board hierarchy:', error);
     throw error;
   }
 }

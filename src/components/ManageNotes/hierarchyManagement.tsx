@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -21,19 +21,18 @@ import {
     createBoard,
     updateBoard,
     deleteBoard,
-    fetchClasses,
     createClass,
     updateClass,
     deleteClass,
-    fetchSubjects,
     createSubject,
     updateSubject,
     deleteSubject,
-    fetchChapters,
     createChapter,
     updateChapter,
     deleteChapter,
+    fetchBoardHierarchy,
 } from "@/app/actions/notes.actions";
+
 
 import {
     AlertDialog,
@@ -45,6 +44,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { ChapterType, HierarchyClassType, HierarchySubjectType } from "@/types/notes";
 
 type ItemType = "board" | "class" | "subject" | "chapter";
 
@@ -54,6 +54,10 @@ export default function HierarchyManagement() {
     const [selectedBoard, setSelectedBoard] = useState<string>("");
     const [selectedClass, setSelectedClass] = useState<string>("");
     const [selectedSubject, setSelectedSubject] = useState<string>("");
+
+      const [availableClasses, setAvailableClasses] = useState<HierarchyClassType[]>([]);
+  const [availableSubjects, setAvailableSubjects] = useState<HierarchySubjectType[]>([]);
+  const [availableChapters, setAvailableChapters] = useState<ChapterType[]>([]);
 
     // Edit states
     const [editId, setEditId] = useState<string | null>(null);
@@ -91,43 +95,54 @@ export default function HierarchyManagement() {
         queryFn: fetchBoards,
     });
 
-    const {
-        data: classes = [],
-        isLoading: isLoadingClasses,
-        error: classesError,
-    } = useQuery({
-        queryKey: ["classes", selectedBoard],
-        queryFn: () => fetchClasses(Number(selectedBoard)),
-        enabled: !!selectedBoard,
-    });
+    // const {
+    //     data: classes = [],
+    //     isLoading: isLoadingClasses,
+    //     error: classesError,
+    // } = useQuery({
+    //     queryKey: ["classes", selectedBoard],
+    //     queryFn: () => fetchClasses(Number(selectedBoard)),
+    //     enabled: !!selectedBoard,
+    // });
 
-    const {
-        data: subjects = [],
-        isLoading: isLoadingSubjects,
-        error: subjectsError,
-    } = useQuery({
-        queryKey: ["subjects", selectedClass],
-        queryFn: () =>
-            fetchSubjects(Number(selectedBoard), Number(selectedClass)),
-        enabled: !!selectedClass,
-    });
+    // const {
+    //     data: subjects = [],
+    //     isLoading: isLoadingSubjects,
+    //     error: subjectsError,
+    // } = useQuery({
+    //     queryKey: ["subjects", selectedClass],
+    //     queryFn: () =>
+    //         fetchSubjects(Number(selectedBoard), Number(selectedClass)),
+    //     enabled: !!selectedClass,
+    // });
 
-    const {
-        data: chapters = [],
-        isLoading: isLoadingChapters,
-        error: chaptersError,
-    } = useQuery({
-        queryKey: ["chapters", selectedSubject],
-        queryFn: () =>
-            fetchChapters(
-                Number(selectedBoard),
-                Number(selectedClass),
-                Number(selectedSubject)
-            ),
-        enabled: !!selectedSubject,
-    });
+    // const {
+    //     data: chapters = [],
+    //     isLoading: isLoadingChapters,
+    //     error: chaptersError,
+    // } = useQuery({
+    //     queryKey: ["chapters", selectedSubject],
+    //     queryFn: () =>
+    //         fetchChapters(
+    //             Number(selectedBoard),
+    //             Number(selectedClass),
+    //             Number(selectedSubject)
+    //         ),
+    //     enabled: !!selectedSubject,
+    // });
 
     // React Query - Mutations
+    
+      const {
+    data: hierarchy = [],
+    isLoading: isLoadingHierarchy,
+    error: hierarchyError,
+  } = useQuery({
+    queryKey: ["boardHierarchy", selectedBoard],
+    queryFn: () => fetchBoardHierarchy(Number(selectedBoard) || undefined),
+    enabled: !!selectedBoard,
+  });
+
     const createBoardMutation = useMutation({
         mutationFn: (boardName: string) => createBoard(boardName),
         onSuccess: () => {
@@ -421,6 +436,45 @@ export default function HierarchyManagement() {
         }
     };
 
+    // Update available classes when hierarchy data changes
+  useEffect(() => {
+    if (hierarchy.length > 0 && selectedBoard) {
+      const currentBoard = hierarchy.find(b => b.boardId === Number(selectedBoard));
+      if (currentBoard) {
+        setAvailableClasses(currentBoard.classes);
+      } else {
+        setAvailableClasses([]);
+      }
+    }
+  }, [hierarchy, selectedBoard]);
+  
+  // Update available subjects when selected class changes
+  useEffect(() => {
+    if (selectedClass && availableClasses.length > 0) {
+      const currentClass = availableClasses.find(c => String(c.classId) === selectedClass);
+      if (currentClass && currentClass.subjects) {
+        setAvailableSubjects(currentClass.subjects);
+      } else {
+        setAvailableSubjects([]);
+      }
+    } else {
+      setAvailableSubjects([]);
+    }
+  }, [availableClasses, selectedClass]);
+  
+  // Update available chapters when selected subject changes
+  useEffect(() => {
+    if (selectedSubject && availableSubjects.length > 0) {
+      const currentSubject = availableSubjects.find(s => String(s.subjectId) === selectedSubject);
+      if (currentSubject && currentSubject.chapters) {
+        setAvailableChapters(currentSubject.chapters);
+      } else {
+        setAvailableChapters([]);
+      }
+    } else {
+      setAvailableChapters([]);
+    }
+  }, [availableSubjects, selectedSubject]);
     return (
         <>
             <Card className="w-full bg-[#1E1E1E] border-[#8D6CCB]/20 shadow-lg">
@@ -533,7 +587,7 @@ export default function HierarchyManagement() {
                                             >
                                                 {editId ===
                                                     String(board.boardId) &&
-                                                    editType === "board" ? (
+                                                editType === "board" ? (
                                                     <div className="flex items-center gap-2 flex-1">
                                                         <Input
                                                             value={editName}
@@ -609,7 +663,7 @@ export default function HierarchyManagement() {
                                                                 }
                                                             >
                                                                 {deleteBoardMutation.isPending &&
-                                                                    deleteBoardMutation.variables ===
+                                                                deleteBoardMutation.variables ===
                                                                     board.boardId ? (
                                                                     <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                                                                 ) : (
@@ -674,27 +728,15 @@ export default function HierarchyManagement() {
                                         <div className="flex justify-between items-center">
                                             <h3 className="text-lg font-semibold text-white">
                                                 Classes for{" "}
-                                                {
-                                                    boards.find(
-                                                        (b) =>
-                                                            String(
-                                                                b.boardId
-                                                            ) === selectedBoard
-                                                    )?.boardName
-                                                }
+                                                {boards.find((b) => String(b.boardId) === selectedBoard)?.boardName}
                                             </h3>
                                             <Button
-                                                onClick={() =>
-                                                    setIsAddingItem(true)
-                                                }
+                                                onClick={() => setIsAddingItem(true)}
                                                 className="bg-gradient-to-r from-[#8D6CCB] to-[#9000FF] hover:from-[#9000FF] hover:to-[#8D6CCB] text-white"
                                                 size="sm"
                                             >
-                                                <Plus
-                                                    size={16}
-                                                    className="mr-1"
-                                                />{" "}
-                                                Add Class
+                                                <Plus size={16} className="mr-1"/>
+                                                {" "}Add Class
                                             </Button>
                                         </div>
 
@@ -727,9 +769,7 @@ export default function HierarchyManagement() {
                                                     )}
                                                 </Button>
                                                 <Button
-                                                    onClick={() =>
-                                                        setIsAddingItem(false)
-                                                    }
+                                                    onClick={() => setIsAddingItem(false)}
                                                     variant="destructive"
                                                     size="icon"
                                                 >
@@ -738,130 +778,70 @@ export default function HierarchyManagement() {
                                             </div>
                                         )}
 
-                                        {isLoadingClasses ? (
+                                        {isLoadingHierarchy  ? (
                                             <div className="text-center py-6 text-gray-400">
                                                 Loading classes...
                                             </div>
-                                        ) : classesError ? (
+                                        ) : hierarchyError  ? (
                                             <div className="text-center py-6 text-red-400">
-                                                Error loading classes. Please
-                                                try again.
+                                                Error loading classes. Please try again.
                                             </div>
                                         ) : (
                                             <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2">
-                                                {classes.map((cls) => (
+                                                {availableClasses.map((cls) => (
                                                     <div
                                                         key={cls.classId}
                                                         className="flex justify-between items-center p-3 rounded-md bg-[#3B444B]/30 border border-[#6544A3]/30"
                                                     >
-                                                        {editId ===
-                                                            String(
-                                                                cls.classId
-                                                            ) &&
-                                                            editType === "class" ? (
+                                                        {editId === String(cls.classId) &&
+                                                        editType === "class" ? (
                                                             <div className="flex items-center gap-2 flex-1">
-                                                                <Input
-                                                                    value={
-                                                                        editName
-                                                                    }
-                                                                    onChange={(
-                                                                        e
-                                                                    ) =>
-                                                                        setEditName(
-                                                                            e
-                                                                                .target
-                                                                                .value
-                                                                        )
-                                                                    }
+                                                                <Input value={editName} onChange={(e) => setEditName(e.target.value)} 
                                                                     className="bg-[#3B444B]/50 border-[#6544A3] text-white"
                                                                 />
-                                                                <Button
-                                                                    onClick={
-                                                                        saveEdit
-                                                                    }
+                                                                <Button onClick={saveEdit}
                                                                     className="bg-green-600 hover:bg-green-700"
                                                                     size="icon"
-                                                                    disabled={
-                                                                        updateClassMutation.isPending
-                                                                    }
+                                                                    disabled={ updateClassMutation.isPending }
                                                                 >
                                                                     {updateClassMutation.isPending ? (
                                                                         <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                                                                     ) : (
-                                                                        <Check
-                                                                            size={
-                                                                                16
-                                                                            }
-                                                                        />
+                                                                        <Check size={16} />
                                                                     )}
                                                                 </Button>
                                                                 <Button
-                                                                    onClick={
-                                                                        cancelEdit
-                                                                    }
+                                                                    onClick={ cancelEdit }
                                                                     variant="destructive"
                                                                     size="icon"
                                                                 >
-                                                                    <X
-                                                                        size={
-                                                                            16
-                                                                        }
-                                                                    />
+                                                                        <X size={16} />
                                                                 </Button>
                                                             </div>
                                                         ) : (
                                                             <>
                                                                 <span className="text-white">
-                                                                    {
-                                                                        cls.className
-                                                                    }
+                                                                    {cls.className}
                                                                 </span>
                                                                 <div className="flex gap-2">
-                                                                    <Button
-                                                                        onClick={() =>
-                                                                            startEdit(
-                                                                                "class",
-                                                                                String(
-                                                                                    cls.classId
-                                                                                ),
-                                                                                cls.className
-                                                                            )
-                                                                        }
+                                                                    <Button onClick={() => startEdit("class", String(cls.classId), cls.className)}
                                                                         className="bg-[#6544A3] hover:bg-[#8D6CCB]"
                                                                         size="icon"
                                                                         variant="outline"
                                                                     >
-                                                                        <Edit
-                                                                            size={
-                                                                                16
-                                                                            }
-                                                                        />
+                                                                        <Edit size={16}/>
                                                                     </Button>
-                                                                    <Button
-                                                                        onClick={() =>
-                                                                            handleDelete(
-                                                                                "class",
-                                                                                String(
-                                                                                    cls.classId
-                                                                                )
-                                                                            )
-                                                                        }
+                                                                    <Button onClick={() => handleDelete("class", String(cls.classId))}
                                                                         variant="destructive"
                                                                         size="icon"
-                                                                        disabled={
-                                                                            deleteClassMutation.isPending
-                                                                        }
+                                                                        disabled={deleteClassMutation.isPending}
                                                                     >
                                                                         {deleteClassMutation.isPending &&
-                                                                            deleteClassMutation.variables ===
+                                                                        deleteClassMutation.variables ===
                                                                             cls.classId ? (
                                                                             <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                                                                         ) : (
-                                                                            <Trash2
-                                                                                size={
-                                                                                    16
-                                                                                }
-                                                                            />
+                                                                            <Trash2 size={16}/>
                                                                         )}
                                                                     </Button>
                                                                 </div>
@@ -869,11 +849,9 @@ export default function HierarchyManagement() {
                                                         )}
                                                     </div>
                                                 ))}
-                                                {classes.length === 0 && (
+                                                {availableClasses.length === 0 && (
                                                     <div className="text-center py-6 text-gray-400">
-                                                        No classes available for
-                                                        this board. Add a new
-                                                        class to get started.
+                                                        No classes available for this board. Add a new class to get started.
                                                     </div>
                                                 )}
                                             </div>
@@ -915,9 +893,7 @@ export default function HierarchyManagement() {
                                                 {boards.map((board) => (
                                                     <SelectItem
                                                         key={board.boardId}
-                                                        value={String(
-                                                            board.boardId
-                                                        )}
+                                                        value={String(board.boardId)}
                                                         className="hover:bg-[#6544A3] focus:bg-[#6544A3]"
                                                     >
                                                         {board.boardName}
@@ -929,10 +905,7 @@ export default function HierarchyManagement() {
 
                                     {selectedBoard && (
                                         <div className="space-y-2">
-                                            <Label
-                                                htmlFor="class-select"
-                                                className="text-white"
-                                            >
+                                            <Label htmlFor="class-select" className="text-white">
                                                 Select Class
                                             </Label>
                                             <Select
@@ -943,12 +916,10 @@ export default function HierarchyManagement() {
                                                     <SelectValue placeholder="Select a class" />
                                                 </SelectTrigger>
                                                 <SelectContent className="bg-[#1E1E1E] text-white border-[#6544A3]">
-                                                    {classes.map((cls) => (
+                                                    {availableClasses.map((cls) => (
                                                         <SelectItem
                                                             key={cls.classId}
-                                                            value={String(
-                                                                cls.classId
-                                                            )}
+                                                            value={String(cls.classId)}
                                                             className="hover:bg-[#6544A3] focus:bg-[#6544A3]"
                                                         >
                                                             {cls.className}
@@ -965,37 +936,20 @@ export default function HierarchyManagement() {
                                         <div className="flex justify-between items-center">
                                             <h3 className="text-lg font-semibold text-white">
                                                 Subjects for{" "}
-                                                {
-                                                    boards.find(
-                                                        (b) =>
-                                                            String(
-                                                                b.boardId
-                                                            ) === selectedBoard
-                                                    )?.boardName
-                                                }{" "}
+                                                { boards.find((b) => String(b.boardId) === selectedBoard)?.boardName}{" "}
                                                 - Class{" "}
-                                                {
-                                                    classes.find(
-                                                        (c) =>
-                                                            String(
-                                                                c.classId
-                                                            ) === selectedClass
-                                                    )?.className
-                                                }
+                                                {availableClasses.find((c) => String(c.classId) === selectedClass)?.className}
                                             </h3>
                                             <Button
-                                                onClick={() =>
-                                                    setIsAddingItem(true)
-                                                }
+                                                onClick={() => {
+                                                    setIsAddingItem(true);
+                                                }}
                                                 className="bg-gradient-to-r from-[#8D6CCB] to-[#9000FF] hover:from-[#9000FF] hover:to-[#8D6CCB] text-white"
                                                 size="sm"
                                                 disabled={isAddingItem}
                                             >
-                                                <Plus
-                                                    size={16}
-                                                    className="mr-1"
-                                                />{" "}
-                                                Add Subject
+                                                <Plus size={16} className="mr-1"/>
+                                                {" "} Add Subject
                                             </Button>
                                         </div>
 
@@ -1003,23 +957,15 @@ export default function HierarchyManagement() {
                                             <div className="flex items-center gap-2 p-2 rounded-md bg-[#3B444B]/30 border border-[#6544A3]/30">
                                                 <Input
                                                     value={newItemName}
-                                                    onChange={(e) =>
-                                                        setNewItemName(
-                                                            e.target.value
-                                                        )
-                                                    }
+                                                    onChange={(e) => setNewItemName(e.target.value)}
                                                     placeholder="Enter subject name"
                                                     className="bg-[#3B444B]/50 border-[#6544A3] text-white placeholder:text-gray-400 flex-1"
                                                 />
                                                 <Button
-                                                    onClick={() =>
-                                                        addNewItem("subject")
-                                                    }
+                                                    onClick={() => addNewItem("subject")}
                                                     className="bg-gradient-to-r from-[#8D6CCB] to-[#9000FF]"
                                                     size="icon"
-                                                    disabled={
-                                                        createSubjectMutation.isPending
-                                                    }
+                                                    disabled={ createSubjectMutation.isPending }
                                                 >
                                                     {createSubjectMutation.isPending ? (
                                                         <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
@@ -1028,9 +974,7 @@ export default function HierarchyManagement() {
                                                     )}
                                                 </Button>
                                                 <Button
-                                                    onClick={() =>
-                                                        setIsAddingItem(false)
-                                                    }
+                                                    onClick={() => setIsAddingItem(false)}
                                                     variant="destructive"
                                                     size="icon"
                                                 >
@@ -1039,131 +983,75 @@ export default function HierarchyManagement() {
                                             </div>
                                         )}
 
-                                        {isLoadingSubjects ? (
+                                        {isLoadingHierarchy  ? (
                                             <div className="text-center py-6 text-gray-400">
                                                 Loading subjects...
                                             </div>
-                                        ) : subjectsError ? (
+                                        ) : hierarchyError  ? (
                                             <div className="text-center py-6 text-red-400">
-                                                Error loading subjects. Please
-                                                try again.
+                                                Error loading subjects. Please try again.
                                             </div>
                                         ) : (
                                             <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2">
-                                                {subjects.map((subject) => (
+                                                {availableSubjects.map((subject) => (
                                                     <div
                                                         key={subject.subjectId}
                                                         className="flex justify-between items-center p-3 rounded-md bg-[#3B444B]/30 border border-[#6544A3]/30"
                                                     >
-                                                        {editId ===
-                                                            String(
-                                                                subject.subjectId
-                                                            ) &&
-                                                            editType ===
-                                                            "subject" ? (
+                                                        {editId === String(subject.subjectId) && editType === "subject" ? (
                                                             <div className="flex items-center gap-2 flex-1">
-                                                                <Input
-                                                                    value={
-                                                                        editName
-                                                                    }
-                                                                    onChange={(
-                                                                        e
-                                                                    ) =>
-                                                                        setEditName(
-                                                                            e
-                                                                                .target
-                                                                                .value
-                                                                        )
-                                                                    }
+                                                                    <Input value={ editName }
+                                                                    onChange={(e) => setEditName(e.target.value)}
                                                                     className="bg-[#3B444B]/50 border-[#6544A3] text-white"
                                                                 />
                                                                 <Button
-                                                                    onClick={
-                                                                        saveEdit
-                                                                    }
+                                                                    onClick={saveEdit}
                                                                     className="bg-green-600 hover:bg-green-700"
                                                                     size="icon"
-                                                                    disabled={
-                                                                        updateSubjectMutation.isPending
-                                                                    }
+                                                                    disabled={ updateSubjectMutation.isPending }
                                                                 >
                                                                     {updateSubjectMutation.isPending ? (
                                                                         <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                                                                     ) : (
-                                                                        <Check
-                                                                            size={
-                                                                                16
-                                                                            }
-                                                                        />
+                                                                        <Check size={16} />
                                                                     )}
                                                                 </Button>
                                                                 <Button
-                                                                    onClick={
-                                                                        cancelEdit
-                                                                    }
+                                                                    onClick={cancelEdit}
                                                                     variant="destructive"
                                                                     size="icon"
                                                                 >
-                                                                    <X
-                                                                        size={
-                                                                            16
-                                                                        }
-                                                                    />
+                                                                    <X size={16} />
                                                                 </Button>
                                                             </div>
                                                         ) : (
                                                             <>
                                                                 <span className="text-white">
-                                                                    {
-                                                                        subject.subjectName
-                                                                    }
+                                                                    { subject.subjectName }
                                                                 </span>
                                                                 <div className="flex gap-2">
                                                                     <Button
                                                                         onClick={() =>
-                                                                            startEdit(
-                                                                                "subject",
-                                                                                String(
-                                                                                    subject.subjectId
-                                                                                ),
-                                                                                subject.subjectName
-                                                                            )
+                                                                            startEdit( "subject", String(subject.subjectId), subject.subjectName )
                                                                         }
                                                                         className="bg-[#6544A3] hover:bg-[#8D6CCB]"
                                                                         size="icon"
                                                                         variant="outline"
                                                                     >
-                                                                        <Edit
-                                                                            size={
-                                                                                16
-                                                                            }
-                                                                        />
+                                                                        <Edit size={16} />
                                                                     </Button>
                                                                     <Button
-                                                                        onClick={() =>
-                                                                            handleDelete(
-                                                                                "subject",
-                                                                                String(
-                                                                                    subject.subjectId
-                                                                                )
-                                                                            )
-                                                                        }
+                                                                        onClick={() => handleDelete("subject", String(subject.subjectId))}
                                                                         variant="destructive"
                                                                         size="icon"
-                                                                        disabled={
-                                                                            deleteSubjectMutation.isPending
-                                                                        }
+                                                                        disabled={deleteSubjectMutation.isPending}
                                                                     >
                                                                         {deleteSubjectMutation.isPending &&
-                                                                            deleteSubjectMutation.variables ===
+                                                                        deleteSubjectMutation.variables ===
                                                                             subject.subjectId ? (
                                                                             <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                                                                         ) : (
-                                                                            <Trash2
-                                                                                size={
-                                                                                    16
-                                                                                }
-                                                                            />
+                                                                            <Trash2 size={16}/>
                                                                         )}
                                                                     </Button>
                                                                 </div>
@@ -1171,12 +1059,9 @@ export default function HierarchyManagement() {
                                                         )}
                                                     </div>
                                                 ))}
-                                                {subjects.length === 0 && (
+                                                {availableSubjects.length === 0 && (
                                                     <div className="text-center py-6 text-gray-400">
-                                                        No subjects available
-                                                        for this class. Add a
-                                                        new subject to get
-                                                        started.
+                                                        No subjects available for this class. Add a new subject to get started.
                                                     </div>
                                                 )}
                                             </div>
@@ -1186,8 +1071,7 @@ export default function HierarchyManagement() {
 
                                 {!selectedClass && (
                                     <div className="text-center py-6 text-gray-400">
-                                        Please select a board and class to view
-                                        or add subjects.
+                                        Please select a board and class to view or add subjects.
                                     </div>
                                 )}
                             </div>
@@ -1219,9 +1103,7 @@ export default function HierarchyManagement() {
                                                 {boards.map((board) => (
                                                     <SelectItem
                                                         key={board.boardId}
-                                                        value={String(
-                                                            board.boardId
-                                                        )}
+                                                        value={String( board.boardId )}
                                                         className="hover:bg-[#6544A3] focus:bg-[#6544A3]"
                                                     >
                                                         {board.boardName}
@@ -1250,12 +1132,10 @@ export default function HierarchyManagement() {
                                                     <SelectValue placeholder="Select a class" />
                                                 </SelectTrigger>
                                                 <SelectContent className="bg-[#1E1E1E] text-white border-[#6544A3]">
-                                                    {classes.map((cls) => (
+                                                    {availableClasses.map((cls) => (
                                                         <SelectItem
                                                             key={cls.classId}
-                                                            value={String(
-                                                                cls.classId
-                                                            )}
+                                                            value={String(cls.classId)}
                                                             className="hover:bg-[#6544A3] focus:bg-[#6544A3]"
                                                         >
                                                             {cls.className}
@@ -1276,27 +1156,19 @@ export default function HierarchyManagement() {
                                             </Label>
                                             <Select
                                                 value={selectedSubject}
-                                                onValueChange={
-                                                    setSelectedSubject
-                                                }
+                                                onValueChange={setSelectedSubject}
                                             >
                                                 <SelectTrigger className="bg-[#3B444B]/50 text-white border-[#6544A3]">
                                                     <SelectValue placeholder="Select a subject" />
                                                 </SelectTrigger>
                                                 <SelectContent className="bg-[#1E1E1E] text-white border-[#6544A3]">
-                                                    {subjects.map((subject) => (
+                                                    {availableSubjects.map((subject) => (
                                                         <SelectItem
-                                                            key={
-                                                                subject.subjectId
-                                                            }
-                                                            value={String(
-                                                                subject.subjectId
-                                                            )}
+                                                            key={ subject.subjectId}
+                                                            value={String(subject.subjectId)}
                                                             className="hover:bg-[#6544A3] focus:bg-[#6544A3]"
                                                         >
-                                                            {
-                                                                subject.subjectName
-                                                            }
+                                                            {subject.subjectName}
                                                         </SelectItem>
                                                     ))}
                                                 </SelectContent>
@@ -1310,47 +1182,22 @@ export default function HierarchyManagement() {
                                         <div className="flex justify-between items-center">
                                             <h3 className="text-lg font-semibold text-white">
                                                 Chapters for{" "}
-                                                {
-                                                    boards.find(
-                                                        (b) =>
-                                                            String(
-                                                                b.boardId
-                                                            ) === selectedBoard
-                                                    )?.boardName
-                                                }{" "}
-                                                - Class{" "}
-                                                {
-                                                    classes.find(
-                                                        (c) =>
-                                                            String(
-                                                                c.classId
-                                                            ) === selectedClass
-                                                    )?.className
-                                                }{" "}
-                                                -
-                                                {
-                                                    subjects.find(
-                                                        (s) =>
-                                                            String(
-                                                                s.subjectId
-                                                            ) ===
-                                                            selectedSubject
-                                                    )?.subjectName
+                                                { boards.find((b) => String( b.boardId) === selectedBoard)?.boardName}
+                                                {" "} - Class{" "}
+                                                {availableClasses.find((c) =>String(c.classId) === selectedClass)?.className
+                                                }
+                                                {" "} - {
+                                                    availableSubjects.find((s) => String(s.subjectId) === selectedSubject)?.subjectName
                                                 }
                                             </h3>
                                             <Button
-                                                onClick={() =>
-                                                    setIsAddingItem(true)
-                                                }
+                                                onClick={() => setIsAddingItem(true)}
                                                 className="bg-gradient-to-r from-[#8D6CCB] to-[#9000FF] hover:from-[#9000FF] hover:to-[#8D6CCB] text-white"
                                                 size="sm"
                                                 disabled={isAddingItem}
                                             >
-                                                <Plus
-                                                    size={16}
-                                                    className="mr-1"
-                                                />{" "}
-                                                Add Chapter
+                                                <Plus size={16} className="mr-1"/>
+                                                {" "}  Add Chapter
                                             </Button>
                                         </div>
 
@@ -1358,23 +1205,15 @@ export default function HierarchyManagement() {
                                             <div className="flex items-center gap-2 p-2 rounded-md bg-[#3B444B]/30 border border-[#6544A3]/30">
                                                 <Input
                                                     value={newItemName}
-                                                    onChange={(e) =>
-                                                        setNewItemName(
-                                                            e.target.value
-                                                        )
-                                                    }
+                                                    onChange={(e) => setNewItemName( e.target.value )}
                                                     placeholder="Enter chapter name"
                                                     className="bg-[#3B444B]/50 border-[#6544A3] text-white placeholder:text-gray-400 flex-1"
                                                 />
                                                 <Button
-                                                    onClick={() =>
-                                                        addNewItem("chapter")
-                                                    }
+                                                    onClick={() => addNewItem("chapter")}
                                                     className="bg-gradient-to-r from-[#8D6CCB] to-[#9000FF]"
                                                     size="icon"
-                                                    disabled={
-                                                        createChapterMutation.isPending
-                                                    }
+                                                    disabled={createChapterMutation.isPending}
                                                 >
                                                     {createChapterMutation.isPending ? (
                                                         <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
@@ -1383,9 +1222,7 @@ export default function HierarchyManagement() {
                                                     )}
                                                 </Button>
                                                 <Button
-                                                    onClick={() =>
-                                                        setIsAddingItem(false)
-                                                    }
+                                                    onClick={() => setIsAddingItem(false)}
                                                     variant="destructive"
                                                     size="icon"
                                                 >
@@ -1394,131 +1231,74 @@ export default function HierarchyManagement() {
                                             </div>
                                         )}
 
-                                        {isLoadingChapters ? (
+                                        {isLoadingHierarchy  ? (
                                             <div className="text-center py-6 text-gray-400">
                                                 Loading chapters...
                                             </div>
-                                        ) : chaptersError ? (
+                                        ) : hierarchyError  ? (
                                             <div className="text-center py-6 text-red-400">
                                                 Error loading chapters. Please
                                                 try again.
                                             </div>
                                         ) : (
                                             <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2">
-                                                {chapters.map((chapter) => (
+                                                {availableChapters.map((chapter) => (
                                                     <div
                                                         key={chapter.chapterId}
                                                         className="flex justify-between items-center p-3 rounded-md bg-[#3B444B]/30 border border-[#6544A3]/30"
                                                     >
-                                                        {editId ===
-                                                            String(
-                                                                chapter.chapterId
-                                                            ) &&
-                                                            editType ===
-                                                            "chapter" ? (
+                                                        {editId === String( chapter.chapterId) &&
+                                                        editType === "chapter" ? (
                                                             <div className="flex items-center gap-2 flex-1">
-                                                                <Input
-                                                                    value={
-                                                                        editName
-                                                                    }
-                                                                    onChange={(
-                                                                        e
-                                                                    ) =>
-                                                                        setEditName(
-                                                                            e
-                                                                                .target
-                                                                                .value
-                                                                        )
-                                                                    }
+                                                                    <Input value={ editName }
+                                                                    onChange={( e ) =>setEditName( e.target.value )}
                                                                     className="bg-[#3B444B]/50 border-[#6544A3] text-white"
                                                                 />
                                                                 <Button
-                                                                    onClick={
-                                                                        saveEdit
-                                                                    }
+                                                                    onClick={ saveEdit }
                                                                     className="bg-green-600 hover:bg-green-700"
                                                                     size="icon"
-                                                                    disabled={
-                                                                        updateChapterMutation.isPending
-                                                                    }
+                                                                    disabled={updateChapterMutation.isPending}
                                                                 >
                                                                     {updateChapterMutation.isPending ? (
                                                                         <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                                                                     ) : (
-                                                                        <Check
-                                                                            size={
-                                                                                16
-                                                                            }
-                                                                        />
+                                                                        <Check size={16}/>
                                                                     )}
                                                                 </Button>
                                                                 <Button
-                                                                    onClick={
-                                                                        cancelEdit
-                                                                    }
+                                                                    onClick={ cancelEdit }
                                                                     variant="destructive"
                                                                     size="icon"
                                                                 >
-                                                                    <X
-                                                                        size={
-                                                                            16
-                                                                        }
-                                                                    />
+                                                                    <X size={16} />
                                                                 </Button>
                                                             </div>
                                                         ) : (
                                                             <>
                                                                 <span className="text-white">
-                                                                    {
-                                                                        chapter.chapterName
-                                                                    }
+                                                                    { chapter.chapterName }
                                                                 </span>
                                                                 <div className="flex gap-2">
-                                                                    <Button
-                                                                        onClick={() =>
-                                                                            startEdit(
-                                                                                "chapter",
-                                                                                String(
-                                                                                    chapter.chapterId
-                                                                                ),
-                                                                                chapter.chapterName
-                                                                            )
-                                                                        }
+                                                                    <Button onClick={() => startEdit("chapter", String(chapter.chapterId), chapter.chapterName)}
                                                                         className="bg-[#6544A3] hover:bg-[#8D6CCB]"
                                                                         size="icon"
                                                                         variant="outline"
                                                                     >
-                                                                        <Edit
-                                                                            size={
-                                                                                16
-                                                                            }
-                                                                        />
+                                                                        <Edit size={16}/>
                                                                     </Button>
                                                                     <Button
-                                                                        onClick={() =>
-                                                                            handleDelete(
-                                                                                "chapter",
-                                                                                String(
-                                                                                    chapter.chapterId
-                                                                                )
-                                                                            )
-                                                                        }
+                                                                        onClick={() => handleDelete("chapter",String(chapter.chapterId))}
                                                                         variant="destructive"
                                                                         size="icon"
-                                                                        disabled={
-                                                                            deleteChapterMutation.isPending
-                                                                        }
+                                                                        disabled={deleteChapterMutation.isPending}
                                                                     >
                                                                         {deleteChapterMutation.isPending &&
-                                                                            deleteChapterMutation.variables ===
+                                                                        deleteChapterMutation.variables ===
                                                                             chapter.chapterId ? (
                                                                             <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                                                                         ) : (
-                                                                            <Trash2
-                                                                                size={
-                                                                                    16
-                                                                                }
-                                                                            />
+                                                                            <Trash2 size={16}/>
                                                                         )}
                                                                     </Button>
                                                                 </div>
@@ -1526,12 +1306,9 @@ export default function HierarchyManagement() {
                                                         )}
                                                     </div>
                                                 ))}
-                                                {chapters.length === 0 && (
+                                                {availableChapters.length === 0 && (
                                                     <div className="text-center py-6 text-gray-400">
-                                                        No chapters available
-                                                        for this subject. Add a
-                                                        new chapter to get
-                                                        started.
+                                                        No chapters available for this subject. Add a new chapter to get started.
                                                     </div>
                                                 )}
                                             </div>
@@ -1541,8 +1318,7 @@ export default function HierarchyManagement() {
 
                                 {!selectedSubject && (
                                     <div className="text-center py-6 text-gray-400">
-                                        Please select a board, class, and
-                                        subject to view or add chapters.
+                                        Please select a board, class, and subject to view or add chapters.
                                     </div>
                                 )}
                             </div>
@@ -1582,12 +1358,12 @@ export default function HierarchyManagement() {
                         >
                             {(deleteItemInfo.type === "board" &&
                                 deleteBoardMutation.isPending) ||
-                                (deleteItemInfo.type === "class" &&
-                                    deleteClassMutation.isPending) ||
-                                (deleteItemInfo.type === "subject" &&
-                                    deleteSubjectMutation.isPending) ||
-                                (deleteItemInfo.type === "chapter" &&
-                                    deleteChapterMutation.isPending) ? (
+                            (deleteItemInfo.type === "class" &&
+                                deleteClassMutation.isPending) ||
+                            (deleteItemInfo.type === "subject" &&
+                                deleteSubjectMutation.isPending) ||
+                            (deleteItemInfo.type === "chapter" &&
+                                deleteChapterMutation.isPending) ? (
                                 <span className="flex items-center">
                                     <div className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-white border-t-transparent" />
                                     Deleting...
@@ -1629,12 +1405,12 @@ export default function HierarchyManagement() {
                         >
                             {(editItemInfo.type === "board" &&
                                 updateBoardMutation.isPending) ||
-                                (editItemInfo.type === "class" &&
-                                    updateClassMutation.isPending) ||
-                                (editItemInfo.type === "subject" &&
-                                    updateSubjectMutation.isPending) ||
-                                (editItemInfo.type === "chapter" &&
-                                    updateChapterMutation.isPending) ? (
+                            (editItemInfo.type === "class" &&
+                                updateClassMutation.isPending) ||
+                            (editItemInfo.type === "subject" &&
+                                updateSubjectMutation.isPending) ||
+                            (editItemInfo.type === "chapter" &&
+                                updateChapterMutation.isPending) ? (
                                 <span className="flex items-center">
                                     <div className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-white border-t-transparent" />
                                     Saving...

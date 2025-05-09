@@ -7,12 +7,14 @@ interface ClassType {
     classId: number;
     className: string;
     boardId?: string;
+    subjects?: SubjectType[];
 }
 
 interface SubjectType {
     subjectId: number;
     subjectName: string;
     classId?: string;
+    chapters?: ChapterType[];
 }
 
 interface ChapterType {
@@ -74,3 +76,17 @@ export type {
     UserType,
     Student
 };
+
+
+
+export interface HierarchySubjectType extends SubjectType {
+  chapters: ChapterType[];
+}
+
+export interface HierarchyClassType extends ClassType {
+  subjects: HierarchySubjectType[];
+}
+
+export interface HierarchyBoardType extends BoardType {
+  classes: HierarchyClassType[];
+}
