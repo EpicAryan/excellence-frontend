@@ -15,7 +15,7 @@ import { cookies } from 'next/headers';
  * Fetch all available boards
  */
 
-const API_URL = process.env.NEXT_BACKEND_API_URL;
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export async function getAccessToken() {
     const cookieStore = await cookies();

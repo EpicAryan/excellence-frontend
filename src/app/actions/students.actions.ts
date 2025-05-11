@@ -4,7 +4,7 @@ import { getAccessToken } from "./notes.actions";
 import { Student } from "@/types/notes";
 import { Class } from "@/types/studentNotes"
 
-const API_URL = process.env.NEXT_BACKEND_API_URL;
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export async function getStudents(): Promise<Student[]> {
   try {

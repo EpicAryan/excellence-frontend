@@ -40,7 +40,7 @@ type TopicData = {
   boardName: string;
 };
 
-const API_URL = process.env.NEXT_BACKEND_API_URL;
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 // API function to fetch topics with filters and pagination
 export const fetchTopics = async (params: TopicsQueryParams = {}): Promise<TopicsResponse> => {
@@ -135,7 +135,7 @@ export const updateTopicAction = async (topicId: string, topicData: Partial<Topi
   try {
     const accessToken = await getAccessToken();
     
-    const API_URL = process.env.NEXT_BACKEND_API_URL;
+    const API_URL = process.env.NEXT_PUBLIC_API_URL;
     const response = await fetch(`${API_URL}/api/topics/${topicId}`, {
       method: 'PUT',
       headers: {
@@ -165,7 +165,7 @@ export const deleteTopicAction = async (topicId: string) => {
   try {
     const accessToken = await getAccessToken();
     
-    const API_URL = process.env.NEXT_BACKEND_API_URL;
+    const API_URL = process.env.NEXT_PUBLIC_API_URL;
     const response = await fetch(`${API_URL}/api/topics/${topicId}`, {
       method: 'DELETE',
       headers: {

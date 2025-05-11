@@ -40,7 +40,7 @@ interface LoginResponse {
 
 export async function loginAction(credentials: LoginCredentials): Promise<LoginResponse> {
   try {
-    const response = await fetch(`${process.env.NEXT_BACKEND_API_URL}/api/auth/login`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -134,7 +134,7 @@ export async function registerStudentAction(formData: {
     }
 
     // Call the backend API
-    const API_URL = process.env.NEXT_BACKEND_API_URL;
+    const API_URL = process.env.NEXT_PUBLIC_API_URL;
     const response = await fetch(`${API_URL}/api/auth/signup`, {
       method: 'POST',
       headers: {
@@ -180,7 +180,7 @@ export async function logoutAction(): Promise<{ success: boolean, message: strin
     if (!sessionId) {
       return { success: false, message: 'No active session' };
     }
-    const response = await fetch(`${process.env.NEXT_BACKEND_API_URL}/api/auth/logout`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/logout`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

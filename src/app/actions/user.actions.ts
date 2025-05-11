@@ -4,7 +4,7 @@ import { UserType } from "@/types/notes";
 import { getAccessToken } from "./notes.actions";
 import { cookies } from 'next/headers';
 
-const API_URL = process.env.NEXT_BACKEND_API_URL;
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export async function searchUsers(query: string): Promise<UserType[]> {
     try {
@@ -64,7 +64,7 @@ export async function searchUsers(query: string): Promise<UserType[]> {
         return null;
       }
   
-      const response = await fetch(`${process.env.NEXT_BACKEND_API_URL}/api/auth/me`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/me`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

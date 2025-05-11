@@ -34,6 +34,7 @@ import { CustomPagination } from "./Pagination/pagination";
 import { TopicTable } from "./ManageNotes/topicTable";
 import { SearchFilterBar } from "./SearchFilterBar/searchFilterBar";
 import { PDFViewer } from "./PDFViewer.tsx/pdfViewer";
+import GoogleLoginButton from "./LoginForm/googleLoginButton";
 
 export {
     Navbar,
@@ -69,5 +70,6 @@ export {
     CustomPagination ,
     TopicTable ,
     SearchFilterBar,
-    PDFViewer 
+    PDFViewer,
+    GoogleLoginButton, 
 };
