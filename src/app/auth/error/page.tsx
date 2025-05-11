@@ -1,12 +1,12 @@
 // src/app/auth/error/page.tsx
 'use client';
 
-
+import { Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
-export default function AuthErrorPage() {
+ function AuthErrorContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   
@@ -41,5 +41,13 @@ export default function AuthErrorPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function AuthErrorPage() {
+  return (
+    <Suspense fallback={<div className="text-white text-center mt-20">Loading...</div>}>
+      <AuthErrorContent />
+    </Suspense>
   );
 }

@@ -40,7 +40,7 @@ const AdminDashboard = () => {
     
     prefetchData();
     // Only run once when component mounts
-  }, [queryClient]);
+  }, []);
 
   return (
     <div className="min-h-screen container mx-auto text-white p-6 mt-10">
