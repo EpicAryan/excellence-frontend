@@ -1,12 +1,14 @@
 'use client';
 
-import React from 'react';
-import { Viewer, Worker, ScrollMode } from '@react-pdf-viewer/core';
+import React, { useEffect, useRef } from 'react';
+import { Viewer, Worker, ScrollMode, SpecialZoomLevel } from '@react-pdf-viewer/core';
 import { toolbarPlugin, ToolbarSlot } from '@react-pdf-viewer/toolbar';
 import { zoomPlugin } from '@react-pdf-viewer/zoom';
 import { pageNavigationPlugin } from '@react-pdf-viewer/page-navigation';
 import { fullScreenPlugin } from '@react-pdf-viewer/full-screen';
 import { scrollModePlugin } from '@react-pdf-viewer/scroll-mode';
+import { RenderPageProps } from '@react-pdf-viewer/core';
+
 
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import '@react-pdf-viewer/toolbar/lib/styles/index.css';
@@ -20,14 +22,81 @@ interface PDFViewerProps {
   onBack: () => void;
 }
 
+const renderPage = (props: RenderPageProps) => {
+  return (
+    <>
+      {props.canvasLayer.children}
+      {/* Omit the text layer completely to prevent text selection */}
+      {props.annotationLayer.children}
+    </>
+  );
+};
+
 export const PDFViewer = ({ pdfUrl, title, onBack }: PDFViewerProps) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+
   // Initialize plugins
   const scrollModePluginInstance = scrollModePlugin();
   const toolbarPluginInstance = toolbarPlugin();
   const { Toolbar } = toolbarPluginInstance;
   const zoomPluginInstance = zoomPlugin();
   const pageNavigationPluginInstance = pageNavigationPlugin();
-  const fullScreenPluginInstance = fullScreenPlugin();
+
+  const fullScreenPluginInstance = fullScreenPlugin({
+
+    onEnterFullScreen: (zoom) => {
+      zoom(SpecialZoomLevel.PageFit);
+
+      const viewerElement = document.querySelector('.rpv-core__viewer');
+      if (viewerElement) {
+        viewerElement.classList.add('fullscreen-viewer');
+      }
+    },
+    onExitFullScreen: (zoom) => {
+      zoom(1);
+      
+       setTimeout(() => {
+      const viewerElement = document.querySelector('.rpv-core__viewer');
+      if (viewerElement) {
+        viewerElement.classList.remove('fullscreen-viewer');
+      }
+    }, 100);
+  }
+});
+
+  useEffect(() => {
+  const styleElement = document.createElement('style');
+  styleElement.textContent = `
+    .rpv-core__viewer.rpv-core__viewer--full-screen,
+    .rpv-core__viewer.fullscreen-viewer {
+      height: 100vh !important;
+    }
+    
+    .rpv-core__viewer.rpv-core__viewer--full-screen .rpv-core__inner-pages,
+    .rpv-core__viewer.fullscreen-viewer .rpv-core__inner-pages {
+      height: calc(100vh - 40px) !important;
+    }
+    
+    /* Add minimum dimensions for the viewer */
+    .rpv-core__viewer {
+      min-height: 400px !important;
+      min-width: 300px !important;
+    }
+    
+    /* Ensure inner pages maintain proper dimensions */
+    .rpv-core__inner-pages {
+      min-height: 350px !important;
+    }
+  `;
+  
+  document.head.appendChild(styleElement);
+  
+  return () => {
+    document.head.removeChild(styleElement);
+  };
+}, []);
+
+
 
   // Combine all plugins
   const plugins = [
@@ -39,7 +108,7 @@ export const PDFViewer = ({ pdfUrl, title, onBack }: PDFViewerProps) => {
   ];
 
   return (
-    <div className="container mx-auto p-2 md:p-4 flex flex-col max-h-screen">
+    <div ref={containerRef} className="container mx-auto p-2 md:p-4 flex flex-col max-h-screen">
       {/* Header with navigation */}
       <div className="flex items-center mb-2 md:mb-4 bg-[#1E1E1E] p-2 md:p-3 rounded-lg sticky top-0 z-10">
         <button 
@@ -154,6 +223,7 @@ export const PDFViewer = ({ pdfUrl, title, onBack }: PDFViewerProps) => {
               plugins={plugins}
               defaultScale={1}
               scrollMode={ScrollMode.Vertical}
+               renderPage={renderPage}
               onDocumentLoad={() => {
                 scrollModePluginInstance.switchScrollMode(ScrollMode.Vertical);
               }}

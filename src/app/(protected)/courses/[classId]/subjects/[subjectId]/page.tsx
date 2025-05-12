@@ -16,7 +16,7 @@ const SubjectPage = () => {
   const classId = Number(params.classId);
   const subjectId = Number(params.subjectId);
 
-  const { data: user } = useUser();
+  const { data: user, isLoading: isUserLoading } = useUser();
   
   const { data: userClasses, isLoading } = useQuery({
     queryKey: ["userCourse", user?.id],
@@ -24,13 +24,11 @@ const SubjectPage = () => {
     enabled: !!user,
   });
 
-  if (isLoading) {
+  if (isUserLoading || !user || isLoading) {
     return (
       <div className="flex items-center justify-center h-[70vh]">
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="h-12 w-12 animate-spin text-[#8D6CCB]" />
-          <p className="text-lg font-medium text-gray-600">Loading subject content...</p>
-        </div>
+        <Loader2 className="h-12 w-12 animate-spin text-[#8D6CCB]" />
+        <p className="text-lg font-medium text-gray-600">Loading content...</p>
       </div>
     );
   }

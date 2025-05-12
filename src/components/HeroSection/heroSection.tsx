@@ -35,6 +35,9 @@ const HeroSection = () => {
 
             <div className=' flex flex-col-reverse lg:flex-row container mx-auto mt-14'>
                 <div className='lg:w-1/2 flex flex-col items-center justify-center lg:items-end lg:justify-end md:mb-20'>
+                    <div className='mb-2 md:mb-8 text-center text-xs md:text-base mt-6 text-gray-300 font-semibold md:pl-4'>
+                        सुबह पढ़ो या रात को हमेशा दिल में रखो इस बात को <br className='md:hidden'/> सफल बनाना है <br className='hidden md:inline-block'/> एक दिन अपने आप को
+                    </div>
                     <div className='relative left-12 md:left-20 lg:-left-24 '>
                         <ArrowSvg />
                     </div>

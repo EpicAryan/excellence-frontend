@@ -85,12 +85,9 @@ const physicalScienceIX = [
 ];
 
 const courseSections = [
-    { title: "English Batch - 1", items: englishBatch1 },
-    { title: "Maths Batch - 2", items: mathsClassX },
-    { title: "Physics Batch - 3", items: physicalScienceIX },
-    // { title: "Chemistry Batch - 4", items: englishBatch1 },
-    // { title: "Biology Batch - 5", items: englishBatch1 },
-    // { title: "Computer Science Batch - 6", items: englishBatch1 },
+    { title: "English Batch", items: englishBatch1 },
+    { title: "Maths", items: mathsClassX },
+    { title: "Physics", items: physicalScienceIX },
 ];
 
 export {courseSections}

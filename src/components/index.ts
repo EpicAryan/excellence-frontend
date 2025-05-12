@@ -33,8 +33,9 @@ import { DeleteConfirmationDialog } from "./ManageNotes/deleteConfirmationDialog
 import { CustomPagination } from "./Pagination/pagination";
 import { TopicTable } from "./ManageNotes/topicTable";
 import { SearchFilterBar } from "./SearchFilterBar/searchFilterBar";
-import { PDFViewer } from "./PDFViewer.tsx/pdfViewer";
+import { PDFViewer } from "./PDFViewer/pdfViewer";
 import GoogleLoginButton from "./LoginForm/googleLoginButton";
+import LoaderWrapper from "./Loader/loaderWrapper";
 
 export {
     Navbar,
@@ -71,5 +72,6 @@ export {
     TopicTable ,
     SearchFilterBar,
     PDFViewer,
-    GoogleLoginButton, 
+    GoogleLoginButton,
+    LoaderWrapper 
 };

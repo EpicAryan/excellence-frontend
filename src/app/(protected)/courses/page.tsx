@@ -7,7 +7,7 @@ import { useUser } from "@/hooks/useUser";
 import { Loader2 } from "lucide-react";
 
 export default function CoursePage() {
-  const { data: user } = useUser();
+  const { data: user, isLoading: isUserLoading } = useUser();
   
   const { data: userClasses, isLoading } = useQuery({
     queryKey: ["userCourse", user?.id],
@@ -15,16 +15,14 @@ export default function CoursePage() {
     enabled: !!user,
   });
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-[70vh]">
-        <div className="flex flex-col items-center gap-4">
+  if (isUserLoading || !user || isLoading) {
+      return (
+        <div className="flex items-center justify-center h-[70vh]">
           <Loader2 className="h-12 w-12 animate-spin text-[#8D6CCB]" />
-          <p className="text-lg font-medium text-gray-600">Loading your courses...</p>
+          <p className="text-lg font-medium text-gray-600">Loading content...</p>
         </div>
-      </div>
-    );
-  }
+      );
+    }
 
   if (!userClasses || userClasses.length === 0) {
     return (

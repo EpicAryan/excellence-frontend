@@ -28,7 +28,7 @@ export function middleware(request: NextRequest) {
 
       if (decoded && decoded.exp > currentTime) {
        
-        if (pathname === '/auth/login') {
+        if (pathname === '/auth/login' || pathname ==='/auth/admin/login') {
           if (decoded.user.role === 'admin') {
             return NextResponse.redirect(new URL('/admin', request.url))
           } else {

@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { Loader2 } from 'lucide-react';
@@ -16,13 +16,47 @@ const PDFViewerPage = () => {
   const subjectId = Number(params.subjectId);
   const topicId = Number(params.topicId);
 
-  const { data: user } = useUser();
+  const { data: user, isLoading: isUserLoading } = useUser();
   
   const { data: userClasses, isLoading } = useQuery({
     queryKey: ["userCourse", user?.id],
     queryFn: () => getStudentCourse(user?.id),
     enabled: !!user,
   });
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (
+        e.key === 'PrintScreen' ||
+        (e.ctrlKey && e.key.toLowerCase() === 'p')
+      ) {
+        e.preventDefault();
+        document.body.style.filter = 'blur(10px)';
+        alert('Screenshot blocked temporarily');
+        setTimeout(() => {
+          document.body.style.filter = '';
+        }, 3000);
+        return false;
+      }
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') {
+        document.body.style.filter = 'blur(10px)';
+      } else {
+        document.body.style.filter = '';
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
+
+
 
   // Find the PDF URL from the fetched data
   const currentClass = userClasses?.find(c => c.classId === classId);
@@ -32,16 +66,14 @@ const PDFViewerPage = () => {
   );
   const currentTopic = currentChapter?.topics.find(t => t.topicId === topicId);
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-[70vh]">
-        <div className="flex flex-col items-center gap-4">
+  if (isUserLoading || !user || isLoading) {
+      return (
+        <div className="flex items-center justify-center h-[70vh]">
           <Loader2 className="h-12 w-12 animate-spin text-[#8D6CCB]" />
-          <p className="text-lg font-medium text-gray-600">Loading PDF...</p>
+          <p className="text-lg font-medium text-gray-600">Loading content...</p>
         </div>
-      </div>
-    );
-  }
+      );
+    }
 
   if (!currentTopic || !currentTopic.pdfUrl) {
     return (
