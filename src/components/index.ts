@@ -36,8 +36,6 @@ import { SearchFilterBar } from "./SearchFilterBar/searchFilterBar";
 import { PDFViewer } from "./PDFViewer/pdfViewer";
 import GoogleLoginButton from "./LoginForm/googleLoginButton";
 import LoaderWrapper from "./Loader/loaderWrapper";
-import { DynamicPDFViewer } from "./PDFViewer/dynamicPDFViewer";
-
 
 export {
     Navbar,
@@ -76,5 +74,5 @@ export {
     PDFViewer,
     GoogleLoginButton,
     LoaderWrapper,
-    DynamicPDFViewer
+     
 };

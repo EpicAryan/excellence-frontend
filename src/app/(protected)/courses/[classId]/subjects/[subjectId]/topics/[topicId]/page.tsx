@@ -7,7 +7,7 @@ import { Loader2 } from 'lucide-react';
 import { getStudentCourse } from '@/app/actions/students.actions';
 import { useUser } from '@/hooks/useUser';
 import { Button } from '@/components/ui/button';
-import { DynamicPDFViewer } from '@/components';
+import { PDFViewer } from '@/components';
 
 const PDFViewerPage = () => {
   const router = useRouter();
@@ -93,7 +93,7 @@ const PDFViewerPage = () => {
   }
 
   return (
-    <DynamicPDFViewer 
+    <PDFViewer 
       pdfUrl={currentTopic.pdfUrl}
       title={currentTopic.topicName}
       onBack={() => router.push(`/courses/${classId}/subjects/${subjectId}`)}
