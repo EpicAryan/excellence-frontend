@@ -10,7 +10,7 @@ import cta2 from '../../../public/image/cta-2.png';
 import cta3 from '../../../public/image/cta-3.png';
 const CTA = () => {
   return (
-    <div id="contact" className='w-full h-full container mx-auto flex flex-col justify-center items-center mb-60 gap-16 md:gap-32 md:px-10 '>
+    <div id="contact" className='w-full h-full container mx-auto flex flex-col justify-center items-center mb-16 md:mb-60 gap-16 md:gap-32 md:px-10 '>
         <div className='relative'>
             <h1 className='text-2xl md:text-3xl lg:text-4xl'>Get in Touch With Us</h1>
             <CourseLineSvg className="absolute w-56 md:w-80 lg:w-[380px] right-0 -translate-y-1/4  "/>
@@ -18,13 +18,13 @@ const CTA = () => {
         <div className='relative w-full'>
             <div className='relative flex flex-col md:flex-row items-center gap-10 lg:items-start md:justify-between'>
            
-                <div className=' w-[17rem] sm:w-[40%] md:w-[16rem] lg:w-[32rem] h-[18rem] lg:h-[16rem]  bg-morph-card rounded-xl  backdrop-blur-md  border border-gradient/70 shadow-[2px_2px_2px_1px_rgba(140,133,190,0.7)] z-10'
+                <div className=' w-[17rem] sm:w-[40%] md:w-[16rem] lg:w-[32rem] h-[20rem] lg:h-[16rem]  bg-morph-card rounded-xl  backdrop-blur-md  border border-gradient/70 shadow-[2px_2px_2px_1px_rgba(140,133,190,0.7)] z-10'
                 >
                     <div className='h-full flex flex-col lg:flex-row p-3 lg:p-4 rounded-xl gap-6'>
                         <Image 
                             src={about}
                             alt='profile picture'
-                            className='rounded-md h-1/2 lg:h-full lg:w-1/2 drop-shadow-[2px_2px_2px_rgba(238,238,238,1)]'
+                            className='rounded-md h-1/2 lg:h-full w-full lg:w-1/2 drop-shadow-[2px_2px_2px_rgba(238,238,238,1)]'
                         />
                         <div className='h-full text-center space-y-3 lg:space-y-6 lg:flex lg:flex-col lg:justify-center'>
                             <h2 className='text-lg lg:text-xl font-semibold lg:font-bold drop-shadow-md'>Educator</h2>
@@ -60,7 +60,7 @@ const CTA = () => {
                             alt='profile picture'
                             width={100}
                             height={100}
-                            className='rounded-md w-full h-full lg:w-2/3 lg:h-2/3 place-self-end drop-shadow-[2px_2px_2px_rgba(238,238,238,1)] lg:mr-6 lg:mt-1'
+                            className='rounded-md w-full h-[75%] lg:w-2/3 lg:h-2/3 place-self-end drop-shadow-[2px_2px_2px_rgba(238,238,238,1)] lg:mr-6 lg:mt-1'
                         />
                         <CtaLineSvg className='hidden lg:block w-10  absolute translate-y-1/2 translate-x-1/2'/>
                     </div>

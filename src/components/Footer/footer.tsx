@@ -56,9 +56,9 @@ const Footer = () => {
         <div className="text-center md:text-left">
           <h2 className="text-2xl font-bold mb-4">Contact Us</h2>
           <ul className="space-y-3 text-sm text-gray-700">
-            <li className="flex items-center justify-center md:justify-start">
-              <FaMapMarkerAlt className="mr-3 text-[#8F63E0]" />
-              Vidyasagar Park, Mollargate, Maheshtala, Kolkata - 700142
+            <li className="flex items-start md:items-center justify-center md:justify-start">
+              <FaMapMarkerAlt className="mr-3 text-[#8F63E0] mt-1 md:mt-0" />
+              Vidyasagar Park, Mollargate, Maheshtala, <br className="md:hidden"/> Kolkata - 700142
             </li>
             <li className="flex items-center justify-center md:justify-start">
               <FaPhone className="mr-3 text-[#8F63E0]" />
