@@ -30,8 +30,9 @@ import {
 import {
     fetchBoards,
     fetchBoardHierarchy,
-    uploadNotes,
+    // uploadNotes,
 } from "@/app/actions/notes.actions";
+import { uploadNotes } from "@/app/actions/upload.actions";
 import { toast } from "sonner";
 
 const NotesUploadDashboard = () => {
@@ -69,7 +70,7 @@ const NotesUploadDashboard = () => {
         queryKey: ["boardHierarchy", selectedBoardId],
         queryFn: () => fetchBoardHierarchy(selectedBoardId || undefined),
         enabled: !!selectedBoardId,
-        staleTime: 1000 * 60 * 10, // 10 minutes
+        staleTime: 1000 * 30 ,
     });
 
     useEffect(() => {
@@ -153,20 +154,46 @@ const NotesUploadDashboard = () => {
         }
     };
 
-    const uploadMutation = useMutation({
-        mutationFn: (formData: FormData) => uploadNotes(formData),
-        onSuccess: () => {
-            // Reset form
-            setTopicName("");
-            setFile(null);
-            setError(null);
+    // const uploadMutation = useMutation({
+    //     mutationFn: (formData: FormData) => uploadNotes(formData),
+    //     onSuccess: () => {
+    //         // Reset form
+    //         setTopicName("");
+    //         setFile(null);
+    //         setError(null);
 
-            toast.success("Notes uploaded successfully!");
-        },
-        onError: (error: Error) => {
-            setError(`Failed to upload notes: ${error.message}`);
-        },
-    });
+    //         toast.success("Notes uploaded successfully!");
+    //     },
+    //     onError: (error: Error) => {
+    //         setError(`Failed to upload notes: ${error.message}`);
+    //     },
+    // });
+
+    const uploadMutation = useMutation({
+    mutationFn: async (uploadData: {
+        topicName: string;
+        chapterId: number;
+        chapterName: string;
+        file: File;
+        isActive: boolean;
+    }) => {
+        // This now calls the client-side function directly
+        return uploadNotes(uploadData);
+    },
+    onSuccess: () => {
+        // Reset form
+        setTopicName("");
+        setFile(null);
+        setError(null);
+        toast.success("Notes uploaded successfully!");
+        
+        // Optionally refresh your data here instead of page reload
+        // queryClient.invalidateQueries(['topics']); // if you have this query
+    },
+    onError: (error: Error) => {
+        setError(`Failed to upload notes: ${error.message}`);
+    },
+});
 
     const handleFileChange = (selectedFile: File) => {
         setFile(selectedFile);
@@ -187,18 +214,27 @@ const NotesUploadDashboard = () => {
 
         try {
             // Validate file size (50MB limit)
-            if (file.size > 50 * 1024 * 1024) {
-                setError("File size exceeds 50MB limit");
+            if (file.size > 25 * 1024 * 1024) {
+                setError("File size exceeds 25MB limit");
                 return;
             }
 
-            const formData = new FormData();
-            formData.append("topicName", topicName);
-            formData.append("chapterId", selectedChapterId.toString());
-            formData.append("file", file);
-            formData.append("isActive", "true");
+            // const formData = new FormData();
+            // formData.append("topicName", topicName);
+            // formData.append("chapterId", selectedChapterId.toString());
+            // formData.append("file", file);
+            // formData.append("isActive", "true");
 
-            uploadMutation.mutate(formData);
+            // uploadMutation.mutate(formData);
+            const uploadData = {
+        topicName: topicName,
+        chapterId: selectedChapterId,
+        chapterName: selectedChapterName,
+        file: file,
+        isActive: true
+    };
+    
+    uploadMutation.mutate(uploadData);
         } catch (error) {
             setError(
                 `Error preparing upload: ${
