@@ -1,4 +1,6 @@
 // notes.actions.ts - Remove "use server" directive from this function
+import { getAccessToken } from "./notes.actions";
+
 export async function uploadNotes(data: {
   topicName: string;
   chapterId: number;
@@ -9,13 +11,14 @@ export async function uploadNotes(data: {
   try {
 
     console.log('Making authenticated request...');
-
+    const accessToken = await getAccessToken();
     // Step 1: Get Cloudinary upload signature from your backend
     const signatureResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/cloudinary/upload-signature`, {
       method: 'POST',
       credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
+         'Authorization': `Bearer ${accessToken}`
       },
       body: JSON.stringify({
         chapterId: data.chapterId,
@@ -72,6 +75,7 @@ export async function uploadNotes(data: {
       credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
+         'Authorization': `Bearer ${accessToken}`
       },
       body: JSON.stringify(topicData),
     });
@@ -84,6 +88,7 @@ export async function uploadNotes(data: {
           credentials: 'include',
           headers: { 
             'Content-Type': 'application/json',
+             'Authorization': `Bearer ${accessToken}`
           },
           body: JSON.stringify({ publicId: `${folder}/${publicId}` }),
         });
