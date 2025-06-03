@@ -44,12 +44,20 @@ export function middleware(request: NextRequest) {
       }
     } catch (error) {
       console.error('Token validation error:', error)
+      const response = NextResponse.redirect(new URL('/auth/login', request.url))
+      response.cookies.delete('accessToken')
+      response.cookies.delete('sessionId')
+      return response
     }
   }
 
   // Handle protected routes that require authentication
   if (pathname.startsWith('/admin') || pathname.startsWith('/courses')) {
-    const url = new URL('/auth/login', request.url)
+    // const url = new URL('/auth/login', request.url)
+    // url.searchParams.set('callbackUrl', pathname)
+    // return NextResponse.redirect(url)
+    const loginUrl = pathname.startsWith('/admin') ? '/auth/admin/login' : '/auth/login'
+    const url = new URL(loginUrl, request.url)
     url.searchParams.set('callbackUrl', pathname)
     return NextResponse.redirect(url)
   }
@@ -68,7 +76,7 @@ export const config = {
      * 3. /static (public files)
      * 4. All files with extensions (e.g. favicon.ico)
      */
-    '/auth/login', '/admin/:path*', '/courses/:path*',
+    '/auth/login',  '/auth/admin/login', '/admin/:path*', '/courses/:path*',
     '/((?!api|_next|static|.*\\..*).*)',
   ],
 }
