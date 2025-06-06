@@ -55,9 +55,9 @@ export default function HierarchyManagement() {
     const [selectedClass, setSelectedClass] = useState<string>("");
     const [selectedSubject, setSelectedSubject] = useState<string>("");
 
-      const [availableClasses, setAvailableClasses] = useState<HierarchyClassType[]>([]);
-  const [availableSubjects, setAvailableSubjects] = useState<HierarchySubjectType[]>([]);
-  const [availableChapters, setAvailableChapters] = useState<ChapterType[]>([]);
+    const [availableClasses, setAvailableClasses] = useState<HierarchyClassType[]>([]);
+    const [availableSubjects, setAvailableSubjects] = useState<HierarchySubjectType[]>([]);
+    const [availableChapters, setAvailableChapters] = useState<ChapterType[]>([]);
 
     // Edit states
     const [editId, setEditId] = useState<string | null>(null);
@@ -95,53 +95,15 @@ export default function HierarchyManagement() {
         queryFn: fetchBoards,
     });
 
-    // const {
-    //     data: classes = [],
-    //     isLoading: isLoadingClasses,
-    //     error: classesError,
-    // } = useQuery({
-    //     queryKey: ["classes", selectedBoard],
-    //     queryFn: () => fetchClasses(Number(selectedBoard)),
-    //     enabled: !!selectedBoard,
-    // });
-
-    // const {
-    //     data: subjects = [],
-    //     isLoading: isLoadingSubjects,
-    //     error: subjectsError,
-    // } = useQuery({
-    //     queryKey: ["subjects", selectedClass],
-    //     queryFn: () =>
-    //         fetchSubjects(Number(selectedBoard), Number(selectedClass)),
-    //     enabled: !!selectedClass,
-    // });
-
-    // const {
-    //     data: chapters = [],
-    //     isLoading: isLoadingChapters,
-    //     error: chaptersError,
-    // } = useQuery({
-    //     queryKey: ["chapters", selectedSubject],
-    //     queryFn: () =>
-    //         fetchChapters(
-    //             Number(selectedBoard),
-    //             Number(selectedClass),
-    //             Number(selectedSubject)
-    //         ),
-    //     enabled: !!selectedSubject,
-    // });
-
-    // React Query - Mutations
-    
-      const {
-    data: hierarchy = [],
-    isLoading: isLoadingHierarchy,
-    error: hierarchyError,
-  } = useQuery({
-    queryKey: ["boardHierarchy", selectedBoard],
-    queryFn: () => fetchBoardHierarchy(Number(selectedBoard) || undefined),
-    enabled: !!selectedBoard,
-  });
+    const {
+        data: hierarchy = [],
+        isLoading: isLoadingHierarchy,
+        error: hierarchyError,
+    } = useQuery({
+        queryKey: ["boardHierarchy", selectedBoard],
+        queryFn: () => fetchBoardHierarchy(Number(selectedBoard) || undefined),
+        enabled: !!selectedBoard,
+    });
 
     const createBoardMutation = useMutation({
         mutationFn: (boardName: string) => createBoard(boardName),
@@ -195,7 +157,7 @@ export default function HierarchyManagement() {
         }) => createClass(className, boardId),
         onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: ["classes", selectedBoard],
+                queryKey: ["boardHierarchy", selectedBoard],
             });
             toast.success("Class created successfully");
             setNewItemName("");
@@ -211,7 +173,7 @@ export default function HierarchyManagement() {
             updateClass(id, name),
         onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: ["classes", selectedBoard],
+                queryKey: ["boardHierarchy", selectedBoard],
             });
             toast.success("Class updated successfully");
             cancelEdit();
@@ -225,7 +187,7 @@ export default function HierarchyManagement() {
         mutationFn: (id: number) => deleteClass(id),
         onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: ["classes", selectedBoard],
+                queryKey: ["boardHierarchy", selectedBoard],
             });
             if (selectedClass) {
                 setSelectedClass("");
@@ -248,7 +210,7 @@ export default function HierarchyManagement() {
         }) => createSubject(subjectName, classId),
         onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: ["subjects", selectedClass],
+                queryKey: ["boardHierarchy", selectedClass],
             });
             toast.success("Subject created successfully");
             setNewItemName("");
@@ -264,7 +226,7 @@ export default function HierarchyManagement() {
             updateSubject(id, name),
         onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: ["subjects", selectedClass],
+                queryKey: ["boardHierarchy", selectedClass],
             });
             toast.success("Subject updated successfully");
             cancelEdit();
@@ -278,7 +240,7 @@ export default function HierarchyManagement() {
         mutationFn: (id: number) => deleteSubject(id),
         onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: ["subjects", selectedClass],
+                queryKey: ["boardHierarchy", selectedClass],
             });
             if (selectedSubject) setSelectedSubject("");
             toast.success("Subject deleted successfully");
@@ -298,7 +260,7 @@ export default function HierarchyManagement() {
         }) => createChapter(chapterName, subjectId),
         onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: ["chapters", selectedSubject],
+                queryKey: ["boardHierarchy", selectedSubject],
             });
             toast.success("Chapter created successfully");
             setNewItemName("");
@@ -314,7 +276,7 @@ export default function HierarchyManagement() {
             updateChapter(id, name),
         onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: ["chapters", selectedSubject],
+                queryKey: ["boardHierarchy", selectedSubject],
             });
             toast.success("Chapter updated successfully");
             cancelEdit();
@@ -328,7 +290,7 @@ export default function HierarchyManagement() {
         mutationFn: (id: number) => deleteChapter(id),
         onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: ["chapters", selectedSubject],
+                queryKey: ["boardHierarchy", selectedSubject],
             });
             toast.success("Chapter deleted successfully");
         },
@@ -337,11 +299,6 @@ export default function HierarchyManagement() {
         },
     });
 
-    // const startEdit = (type: 'board' | 'class' | 'subject' | 'chapter', id: string, name: string) => {
-    //   setEditId(id);
-    //   setEditType(type);
-    //   setEditName(name);
-    // };
     const startEdit = (type: ItemType, id: string, name: string) => {
         setEditId(id);
         setEditType(type);
@@ -437,44 +394,44 @@ export default function HierarchyManagement() {
     };
 
     // Update available classes when hierarchy data changes
-  useEffect(() => {
-    if (hierarchy.length > 0 && selectedBoard) {
-      const currentBoard = hierarchy.find(b => b.boardId === Number(selectedBoard));
-      if (currentBoard) {
-        setAvailableClasses(currentBoard.classes);
-      } else {
-        setAvailableClasses([]);
-      }
-    }
-  }, [hierarchy, selectedBoard]);
-  
-  // Update available subjects when selected class changes
-  useEffect(() => {
-    if (selectedClass && availableClasses.length > 0) {
-      const currentClass = availableClasses.find(c => String(c.classId) === selectedClass);
-      if (currentClass && currentClass.subjects) {
-        setAvailableSubjects(currentClass.subjects);
-      } else {
-        setAvailableSubjects([]);
-      }
-    } else {
-      setAvailableSubjects([]);
-    }
-  }, [availableClasses, selectedClass]);
-  
-  // Update available chapters when selected subject changes
-  useEffect(() => {
-    if (selectedSubject && availableSubjects.length > 0) {
-      const currentSubject = availableSubjects.find(s => String(s.subjectId) === selectedSubject);
-      if (currentSubject && currentSubject.chapters) {
-        setAvailableChapters(currentSubject.chapters);
-      } else {
-        setAvailableChapters([]);
-      }
-    } else {
-      setAvailableChapters([]);
-    }
-  }, [availableSubjects, selectedSubject]);
+    useEffect(() => {
+        if (hierarchy.length > 0 && selectedBoard) {
+            const currentBoard = hierarchy.find(b => b.boardId === Number(selectedBoard));
+            if (currentBoard) {
+                setAvailableClasses(currentBoard.classes);
+            } else {
+                setAvailableClasses([]);
+            }
+        }
+    }, [hierarchy, selectedBoard]);
+
+    // Update available subjects when selected class changes
+    useEffect(() => {
+        if (selectedClass && availableClasses.length > 0) {
+            const currentClass = availableClasses.find(c => String(c.classId) === selectedClass);
+            if (currentClass && currentClass.subjects) {
+                setAvailableSubjects(currentClass.subjects);
+            } else {
+                setAvailableSubjects([]);
+            }
+        } else {
+            setAvailableSubjects([]);
+        }
+    }, [availableClasses, selectedClass]);
+
+    // Update available chapters when selected subject changes
+    useEffect(() => {
+        if (selectedSubject && availableSubjects.length > 0) {
+            const currentSubject = availableSubjects.find(s => String(s.subjectId) === selectedSubject);
+            if (currentSubject && currentSubject.chapters) {
+                setAvailableChapters(currentSubject.chapters);
+            } else {
+                setAvailableChapters([]);
+            }
+        } else {
+            setAvailableChapters([]);
+        }
+    }, [availableSubjects, selectedSubject]);
     return (
         <>
             <Card className="w-full bg-[#1E1E1E] border-[#8D6CCB]/20 shadow-lg">
@@ -538,9 +495,12 @@ export default function HierarchyManagement() {
                                     <div className="flex items-center gap-2 p-2 rounded-md bg-[#3B444B]/30 border border-[#6544A3]/30">
                                         <Input
                                             value={newItemName}
-                                            onChange={(e) =>
-                                                setNewItemName(e.target.value)
-                                            }
+                                            onChange={(e) =>setNewItemName(e.target.value)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === "Enter") {
+                                                addNewItem("board");
+                                                }
+                                            }}
                                             placeholder="Enter board name"
                                             className="bg-[#3B444B]/50 border-[#6544A3] text-white placeholder:text-gray-400 flex-1"
                                         />
@@ -587,7 +547,7 @@ export default function HierarchyManagement() {
                                             >
                                                 {editId ===
                                                     String(board.boardId) &&
-                                                editType === "board" ? (
+                                                    editType === "board" ? (
                                                     <div className="flex items-center gap-2 flex-1">
                                                         <Input
                                                             value={editName}
@@ -663,15 +623,11 @@ export default function HierarchyManagement() {
                                                                 }
                                                             >
                                                                 {deleteBoardMutation.isPending &&
-                                                                deleteBoardMutation.variables ===
+                                                                    deleteBoardMutation.variables ===
                                                                     board.boardId ? (
                                                                     <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                                                                 ) : (
-                                                                    <Trash2
-                                                                        size={
-                                                                            16
-                                                                        }
-                                                                    />
+                                                                    <Trash2 size={16}/>
                                                                 )}
                                                             </Button>
                                                         </div>
@@ -735,7 +691,7 @@ export default function HierarchyManagement() {
                                                 className="bg-gradient-to-r from-[#8D6CCB] to-[#9000FF] hover:from-[#9000FF] hover:to-[#8D6CCB] text-white"
                                                 size="sm"
                                             >
-                                                <Plus size={16} className="mr-1"/>
+                                                <Plus size={16} className="mr-1" />
                                                 {" "}Add Class
                                             </Button>
                                         </div>
@@ -744,11 +700,12 @@ export default function HierarchyManagement() {
                                             <div className="flex items-center gap-2 p-2 rounded-md bg-[#3B444B]/30 border border-[#6544A3]/30">
                                                 <Input
                                                     value={newItemName}
-                                                    onChange={(e) =>
-                                                        setNewItemName(
-                                                            e.target.value
-                                                        )
-                                                    }
+                                                    onChange={(e) => setNewItemName(e.target.value)}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === "Enter") {
+                                                        addNewItem("class");
+                                                        }
+                                                    }}
                                                     placeholder="Enter class name (e.g. 10, 11, 12)"
                                                     className="bg-[#3B444B]/50 border-[#6544A3] text-white placeholder:text-gray-400 flex-1"
                                                 />
@@ -778,11 +735,11 @@ export default function HierarchyManagement() {
                                             </div>
                                         )}
 
-                                        {isLoadingHierarchy  ? (
+                                        {isLoadingHierarchy ? (
                                             <div className="text-center py-6 text-gray-400">
                                                 Loading classes...
                                             </div>
-                                        ) : hierarchyError  ? (
+                                        ) : hierarchyError ? (
                                             <div className="text-center py-6 text-red-400">
                                                 Error loading classes. Please try again.
                                             </div>
@@ -794,15 +751,15 @@ export default function HierarchyManagement() {
                                                         className="flex justify-between items-center p-3 rounded-md bg-[#3B444B]/30 border border-[#6544A3]/30"
                                                     >
                                                         {editId === String(cls.classId) &&
-                                                        editType === "class" ? (
+                                                            editType === "class" ? (
                                                             <div className="flex items-center gap-2 flex-1">
-                                                                <Input value={editName} onChange={(e) => setEditName(e.target.value)} 
+                                                                <Input value={editName} onChange={(e) => setEditName(e.target.value)}
                                                                     className="bg-[#3B444B]/50 border-[#6544A3] text-white"
                                                                 />
                                                                 <Button onClick={saveEdit}
                                                                     className="bg-green-600 hover:bg-green-700"
                                                                     size="icon"
-                                                                    disabled={ updateClassMutation.isPending }
+                                                                    disabled={updateClassMutation.isPending}
                                                                 >
                                                                     {updateClassMutation.isPending ? (
                                                                         <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
@@ -811,11 +768,11 @@ export default function HierarchyManagement() {
                                                                     )}
                                                                 </Button>
                                                                 <Button
-                                                                    onClick={ cancelEdit }
+                                                                    onClick={cancelEdit}
                                                                     variant="destructive"
                                                                     size="icon"
                                                                 >
-                                                                        <X size={16} />
+                                                                    <X size={16} />
                                                                 </Button>
                                                             </div>
                                                         ) : (
@@ -829,7 +786,7 @@ export default function HierarchyManagement() {
                                                                         size="icon"
                                                                         variant="outline"
                                                                     >
-                                                                        <Edit size={16}/>
+                                                                        <Edit size={16} />
                                                                     </Button>
                                                                     <Button onClick={() => handleDelete("class", String(cls.classId))}
                                                                         variant="destructive"
@@ -837,11 +794,11 @@ export default function HierarchyManagement() {
                                                                         disabled={deleteClassMutation.isPending}
                                                                     >
                                                                         {deleteClassMutation.isPending &&
-                                                                        deleteClassMutation.variables ===
+                                                                            deleteClassMutation.variables ===
                                                                             cls.classId ? (
                                                                             <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                                                                         ) : (
-                                                                            <Trash2 size={16}/>
+                                                                            <Trash2 size={16} />
                                                                         )}
                                                                     </Button>
                                                                 </div>
@@ -936,8 +893,8 @@ export default function HierarchyManagement() {
                                         <div className="flex justify-between items-center">
                                             <h3 className="text-lg font-semibold text-white">
                                                 Subjects for{" "}
-                                                { boards.find((b) => String(b.boardId) === selectedBoard)?.boardName}{" "}
-                                                - Class{" "}
+                                                {boards.find((b) => String(b.boardId) === selectedBoard)?.boardName}{" "}
+                                                - {" "}
                                                 {availableClasses.find((c) => String(c.classId) === selectedClass)?.className}
                                             </h3>
                                             <Button
@@ -948,7 +905,7 @@ export default function HierarchyManagement() {
                                                 size="sm"
                                                 disabled={isAddingItem}
                                             >
-                                                <Plus size={16} className="mr-1"/>
+                                                <Plus size={16} className="mr-1" />
                                                 {" "} Add Subject
                                             </Button>
                                         </div>
@@ -958,6 +915,11 @@ export default function HierarchyManagement() {
                                                 <Input
                                                     value={newItemName}
                                                     onChange={(e) => setNewItemName(e.target.value)}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === "Enter") {
+                                                            addNewItem("subject");
+                                                        }
+                                                    }}
                                                     placeholder="Enter subject name"
                                                     className="bg-[#3B444B]/50 border-[#6544A3] text-white placeholder:text-gray-400 flex-1"
                                                 />
@@ -965,7 +927,7 @@ export default function HierarchyManagement() {
                                                     onClick={() => addNewItem("subject")}
                                                     className="bg-gradient-to-r from-[#8D6CCB] to-[#9000FF]"
                                                     size="icon"
-                                                    disabled={ createSubjectMutation.isPending }
+                                                    disabled={createSubjectMutation.isPending}
                                                 >
                                                     {createSubjectMutation.isPending ? (
                                                         <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
@@ -983,11 +945,11 @@ export default function HierarchyManagement() {
                                             </div>
                                         )}
 
-                                        {isLoadingHierarchy  ? (
+                                        {isLoadingHierarchy ? (
                                             <div className="text-center py-6 text-gray-400">
                                                 Loading subjects...
                                             </div>
-                                        ) : hierarchyError  ? (
+                                        ) : hierarchyError ? (
                                             <div className="text-center py-6 text-red-400">
                                                 Error loading subjects. Please try again.
                                             </div>
@@ -1000,7 +962,7 @@ export default function HierarchyManagement() {
                                                     >
                                                         {editId === String(subject.subjectId) && editType === "subject" ? (
                                                             <div className="flex items-center gap-2 flex-1">
-                                                                    <Input value={ editName }
+                                                                <Input value={editName}
                                                                     onChange={(e) => setEditName(e.target.value)}
                                                                     className="bg-[#3B444B]/50 border-[#6544A3] text-white"
                                                                 />
@@ -1008,7 +970,7 @@ export default function HierarchyManagement() {
                                                                     onClick={saveEdit}
                                                                     className="bg-green-600 hover:bg-green-700"
                                                                     size="icon"
-                                                                    disabled={ updateSubjectMutation.isPending }
+                                                                    disabled={updateSubjectMutation.isPending}
                                                                 >
                                                                     {updateSubjectMutation.isPending ? (
                                                                         <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
@@ -1027,12 +989,12 @@ export default function HierarchyManagement() {
                                                         ) : (
                                                             <>
                                                                 <span className="text-white">
-                                                                    { subject.subjectName }
+                                                                    {subject.subjectName}
                                                                 </span>
                                                                 <div className="flex gap-2">
                                                                     <Button
                                                                         onClick={() =>
-                                                                            startEdit( "subject", String(subject.subjectId), subject.subjectName )
+                                                                            startEdit("subject", String(subject.subjectId), subject.subjectName)
                                                                         }
                                                                         className="bg-[#6544A3] hover:bg-[#8D6CCB]"
                                                                         size="icon"
@@ -1047,11 +1009,11 @@ export default function HierarchyManagement() {
                                                                         disabled={deleteSubjectMutation.isPending}
                                                                     >
                                                                         {deleteSubjectMutation.isPending &&
-                                                                        deleteSubjectMutation.variables ===
+                                                                            deleteSubjectMutation.variables ===
                                                                             subject.subjectId ? (
                                                                             <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                                                                         ) : (
-                                                                            <Trash2 size={16}/>
+                                                                            <Trash2 size={16} />
                                                                         )}
                                                                     </Button>
                                                                 </div>
@@ -1103,7 +1065,7 @@ export default function HierarchyManagement() {
                                                 {boards.map((board) => (
                                                     <SelectItem
                                                         key={board.boardId}
-                                                        value={String( board.boardId )}
+                                                        value={String(board.boardId)}
                                                         className="hover:bg-[#6544A3] focus:bg-[#6544A3]"
                                                     >
                                                         {board.boardName}
@@ -1164,7 +1126,7 @@ export default function HierarchyManagement() {
                                                 <SelectContent className="bg-[#1E1E1E] text-white border-[#6544A3]">
                                                     {availableSubjects.map((subject) => (
                                                         <SelectItem
-                                                            key={ subject.subjectId}
+                                                            key={subject.subjectId}
                                                             value={String(subject.subjectId)}
                                                             className="hover:bg-[#6544A3] focus:bg-[#6544A3]"
                                                         >
@@ -1182,9 +1144,9 @@ export default function HierarchyManagement() {
                                         <div className="flex justify-between items-center">
                                             <h3 className="text-lg font-semibold text-white">
                                                 Chapters for{" "}
-                                                { boards.find((b) => String( b.boardId) === selectedBoard)?.boardName}
-                                                {" "} - Class{" "}
-                                                {availableClasses.find((c) =>String(c.classId) === selectedClass)?.className
+                                                {boards.find((b) => String(b.boardId) === selectedBoard)?.boardName}
+                                                {" "} - {" "}
+                                                {availableClasses.find((c) => String(c.classId) === selectedClass)?.className
                                                 }
                                                 {" "} - {
                                                     availableSubjects.find((s) => String(s.subjectId) === selectedSubject)?.subjectName
@@ -1196,7 +1158,7 @@ export default function HierarchyManagement() {
                                                 size="sm"
                                                 disabled={isAddingItem}
                                             >
-                                                <Plus size={16} className="mr-1"/>
+                                                <Plus size={16} className="mr-1" />
                                                 {" "}  Add Chapter
                                             </Button>
                                         </div>
@@ -1205,7 +1167,12 @@ export default function HierarchyManagement() {
                                             <div className="flex items-center gap-2 p-2 rounded-md bg-[#3B444B]/30 border border-[#6544A3]/30">
                                                 <Input
                                                     value={newItemName}
-                                                    onChange={(e) => setNewItemName( e.target.value )}
+                                                    onChange={(e) => setNewItemName(e.target.value)}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === "Enter") {
+                                                        addNewItem("chapter");
+                                                        }
+                                                    }}
                                                     placeholder="Enter chapter name"
                                                     className="bg-[#3B444B]/50 border-[#6544A3] text-white placeholder:text-gray-400 flex-1"
                                                 />
@@ -1231,11 +1198,11 @@ export default function HierarchyManagement() {
                                             </div>
                                         )}
 
-                                        {isLoadingHierarchy  ? (
+                                        {isLoadingHierarchy ? (
                                             <div className="text-center py-6 text-gray-400">
                                                 Loading chapters...
                                             </div>
-                                        ) : hierarchyError  ? (
+                                        ) : hierarchyError ? (
                                             <div className="text-center py-6 text-red-400">
                                                 Error loading chapters. Please
                                                 try again.
@@ -1247,15 +1214,15 @@ export default function HierarchyManagement() {
                                                         key={chapter.chapterId}
                                                         className="flex justify-between items-center p-3 rounded-md bg-[#3B444B]/30 border border-[#6544A3]/30"
                                                     >
-                                                        {editId === String( chapter.chapterId) &&
-                                                        editType === "chapter" ? (
+                                                        {editId === String(chapter.chapterId) &&
+                                                            editType === "chapter" ? (
                                                             <div className="flex items-center gap-2 flex-1">
-                                                                    <Input value={ editName }
-                                                                    onChange={( e ) =>setEditName( e.target.value )}
+                                                                <Input value={editName}
+                                                                    onChange={(e) => setEditName(e.target.value)}
                                                                     className="bg-[#3B444B]/50 border-[#6544A3] text-white"
                                                                 />
                                                                 <Button
-                                                                    onClick={ saveEdit }
+                                                                    onClick={saveEdit}
                                                                     className="bg-green-600 hover:bg-green-700"
                                                                     size="icon"
                                                                     disabled={updateChapterMutation.isPending}
@@ -1263,11 +1230,11 @@ export default function HierarchyManagement() {
                                                                     {updateChapterMutation.isPending ? (
                                                                         <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                                                                     ) : (
-                                                                        <Check size={16}/>
+                                                                        <Check size={16} />
                                                                     )}
                                                                 </Button>
                                                                 <Button
-                                                                    onClick={ cancelEdit }
+                                                                    onClick={cancelEdit}
                                                                     variant="destructive"
                                                                     size="icon"
                                                                 >
@@ -1277,7 +1244,7 @@ export default function HierarchyManagement() {
                                                         ) : (
                                                             <>
                                                                 <span className="text-white">
-                                                                    { chapter.chapterName }
+                                                                    {chapter.chapterName}
                                                                 </span>
                                                                 <div className="flex gap-2">
                                                                     <Button onClick={() => startEdit("chapter", String(chapter.chapterId), chapter.chapterName)}
@@ -1285,20 +1252,20 @@ export default function HierarchyManagement() {
                                                                         size="icon"
                                                                         variant="outline"
                                                                     >
-                                                                        <Edit size={16}/>
+                                                                        <Edit size={16} />
                                                                     </Button>
                                                                     <Button
-                                                                        onClick={() => handleDelete("chapter",String(chapter.chapterId))}
+                                                                        onClick={() => handleDelete("chapter", String(chapter.chapterId))}
                                                                         variant="destructive"
                                                                         size="icon"
                                                                         disabled={deleteChapterMutation.isPending}
                                                                     >
                                                                         {deleteChapterMutation.isPending &&
-                                                                        deleteChapterMutation.variables ===
+                                                                            deleteChapterMutation.variables ===
                                                                             chapter.chapterId ? (
                                                                             <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                                                                         ) : (
-                                                                            <Trash2 size={16}/>
+                                                                            <Trash2 size={16} />
                                                                         )}
                                                                     </Button>
                                                                 </div>
@@ -1358,12 +1325,12 @@ export default function HierarchyManagement() {
                         >
                             {(deleteItemInfo.type === "board" &&
                                 deleteBoardMutation.isPending) ||
-                            (deleteItemInfo.type === "class" &&
-                                deleteClassMutation.isPending) ||
-                            (deleteItemInfo.type === "subject" &&
-                                deleteSubjectMutation.isPending) ||
-                            (deleteItemInfo.type === "chapter" &&
-                                deleteChapterMutation.isPending) ? (
+                                (deleteItemInfo.type === "class" &&
+                                    deleteClassMutation.isPending) ||
+                                (deleteItemInfo.type === "subject" &&
+                                    deleteSubjectMutation.isPending) ||
+                                (deleteItemInfo.type === "chapter" &&
+                                    deleteChapterMutation.isPending) ? (
                                 <span className="flex items-center">
                                     <div className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-white border-t-transparent" />
                                     Deleting...
@@ -1405,12 +1372,12 @@ export default function HierarchyManagement() {
                         >
                             {(editItemInfo.type === "board" &&
                                 updateBoardMutation.isPending) ||
-                            (editItemInfo.type === "class" &&
-                                updateClassMutation.isPending) ||
-                            (editItemInfo.type === "subject" &&
-                                updateSubjectMutation.isPending) ||
-                            (editItemInfo.type === "chapter" &&
-                                updateChapterMutation.isPending) ? (
+                                (editItemInfo.type === "class" &&
+                                    updateClassMutation.isPending) ||
+                                (editItemInfo.type === "subject" &&
+                                    updateSubjectMutation.isPending) ||
+                                (editItemInfo.type === "chapter" &&
+                                    updateChapterMutation.isPending) ? (
                                 <span className="flex items-center">
                                     <div className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-white border-t-transparent" />
                                     Saving...

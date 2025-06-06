@@ -148,7 +148,7 @@ const AppSidebar = () => {
             {/* Main Content */}
             <SidebarContent className="flex-grow overflow-y-auto">
                 <SidebarGroup>
-                    <SidebarGroupLabel className="text-lg font-semibold text-neutral-900">
+                    <SidebarGroupLabel className="text-lg font-semibold text-neutral-900 mb-2">
                         Courses
                     </SidebarGroupLabel>
                     <SidebarGroupContent>
@@ -167,6 +167,7 @@ const AppSidebar = () => {
                                                         classItem.classId
                                                     )
                                                 }
+                                                size={'lg'}
                                                 className="w-full flex items-center justify-between text-neutral-900 font-medium hover:bg-[#8D6CCB] hover:text-white rounded-md active:bg-[#8D6CCB] active:text-white active:scale-95"
                                             >
                                                 <div className="flex items-center gap-2">

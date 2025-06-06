@@ -56,6 +56,7 @@ export function TopicTable({
             </tr>
           ) : topics.length > 0 ? (
             topics.map((topic) => (
+              
               <tr key={topic.topicId} className="bg-[#1E1E1E] hover:bg-[#3B444B]/30">
                 <td className="p-3 text-white">{topic.topicName}</td>
                 <td className="p-3 text-white">{topic.board}</td>
@@ -71,9 +72,6 @@ export function TopicTable({
                       disabled={isTogglingStatus === topic.topicId}
                       className="data-[state=checked]:bg-[#8D6CCB]"
                     />
-                    {/* <span className={`ml-2 text-xs min-w-[60px] text-center ${topic.isActive ? 'text-green-400' : 'text-red-400'}`}>
-                      {topic.isActive ? 'Active' : 'Inactive'}
-                    </span> */}
                      <span className={`ml-2 text-xs min-w-[60px] text-center ${topic.isActive ? 'text-green-400' : 'text-red-400'}`}>
                         {isTogglingStatus === topic.topicId ? 'Updating...' : (topic.isActive ? 'Active' : 'Inactive')}
                       </span>

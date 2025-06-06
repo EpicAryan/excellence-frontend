@@ -46,7 +46,7 @@ export default function NotesContentManagement() {
     updatePage,
     refetch
   } = useTopics({
-    limit: 3, 
+    limit: 20, 
   });
   
   const {

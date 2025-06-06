@@ -99,11 +99,6 @@ export async function uploadNotes(data: {
       const errorData = await response.json().catch(() => null);
       throw new Error(`Failed to save topic: ${errorData?.message || response.statusText}`);
     }
-
-    // Manually refresh the page or invalidate queries since we can't use revalidatePath
-    if (typeof window !== 'undefined') {
-      window.location.reload(); // Or use your state management to refresh data
-    }
     
   } catch (error) {
     console.error('Error uploading notes:', error);

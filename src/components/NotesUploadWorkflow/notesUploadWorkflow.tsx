@@ -30,7 +30,6 @@ import {
 import {
     fetchBoards,
     fetchBoardHierarchy,
-    // uploadNotes,
 } from "@/app/actions/notes.actions";
 import { uploadNotes } from "@/app/actions/upload.actions";
 import { toast } from "sonner";
@@ -163,7 +162,6 @@ const NotesUploadDashboard = () => {
         file: File;
         isActive: boolean;
     }) => {
-        // This now calls the client-side function directly
         return uploadNotes(uploadData);
     },
     onSuccess: () => {
@@ -172,9 +170,6 @@ const NotesUploadDashboard = () => {
         setFile(null);
         setError(null);
         toast.success("Notes uploaded successfully!");
-        
-        // Optionally refresh your data here instead of page reload
-        // queryClient.invalidateQueries(['topics']); // if you have this query
     },
     onError: (error: Error) => {
         setError(`Failed to upload notes: ${error.message}`);
@@ -204,28 +199,18 @@ const NotesUploadDashboard = () => {
                 setError("File size exceeds 25MB limit");
                 return;
             }
-
-            // const formData = new FormData();
-            // formData.append("topicName", topicName);
-            // formData.append("chapterId", selectedChapterId.toString());
-            // formData.append("file", file);
-            // formData.append("isActive", "true");
-
-            // uploadMutation.mutate(formData);
             const uploadData = {
-        topicName: topicName,
-        chapterId: selectedChapterId,
-        chapterName: selectedChapterName,
-        file: file,
-        isActive: true
-    };
+                topicName: topicName,
+                chapterId: selectedChapterId,
+                chapterName: selectedChapterName,
+                file: file,
+                isActive: true
+            };
     
-    uploadMutation.mutate(uploadData);
+            uploadMutation.mutate(uploadData);
         } catch (error) {
             setError(
-                `Error preparing upload: ${
-                    error instanceof Error ? error.message : "Unknown error"
-                }`
+                `Error preparing upload: ${ error instanceof Error ? error.message : "Unknown error" }`
             );
         }
     };
