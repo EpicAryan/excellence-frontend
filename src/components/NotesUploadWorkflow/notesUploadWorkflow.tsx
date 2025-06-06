@@ -154,20 +154,6 @@ const NotesUploadDashboard = () => {
         }
     };
 
-    // const uploadMutation = useMutation({
-    //     mutationFn: (formData: FormData) => uploadNotes(formData),
-    //     onSuccess: () => {
-    //         // Reset form
-    //         setTopicName("");
-    //         setFile(null);
-    //         setError(null);
-
-    //         toast.success("Notes uploaded successfully!");
-    //     },
-    //     onError: (error: Error) => {
-    //         setError(`Failed to upload notes: ${error.message}`);
-    //     },
-    // });
 
     const uploadMutation = useMutation({
     mutationFn: async (uploadData: {

@@ -26,7 +26,7 @@ const renderPage = (props: RenderPageProps) => {
   return (
     <>
       {props.canvasLayer.children}
-      {/* Omit the text layer completely to prevent text selection */}
+      {props.textLayer.children}
       {props.annotationLayer.children}
     </>
   );
@@ -87,6 +87,11 @@ export const PDFViewer = ({ pdfUrl, title, onBack }: PDFViewerProps) => {
     .rpv-core__inner-pages {
       min-height: 350px !important;
     }
+
+     /* Hides the text layer while keeping the rendering working */
+    .rpv-core__text-layer {
+      display: none !important;
+    }
   `;
   
   document.head.appendChild(styleElement);
@@ -106,6 +111,7 @@ export const PDFViewer = ({ pdfUrl, title, onBack }: PDFViewerProps) => {
     pageNavigationPluginInstance,
     fullScreenPluginInstance,
   ];
+
 
   return (
     <div ref={containerRef} className="container mx-auto p-2 md:p-4 flex flex-col max-h-screen">
@@ -217,7 +223,7 @@ export const PDFViewer = ({ pdfUrl, title, onBack }: PDFViewerProps) => {
 
         {/* PDF Viewer */}
         <div className="flex-1 overflow-auto">
-          <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
+          <Worker workerUrl="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js">
             <Viewer
               fileUrl={pdfUrl}
               plugins={plugins}
