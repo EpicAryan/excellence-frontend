@@ -1,29 +1,12 @@
-'use client'
 
-import React from 'react';
-import { LoginForm } from '@/components';
+'use client';
+import { GoogleLoginButton } from "@/components";
+import { Separator } from "@/components/ui/separator"
 
-
-interface LoginFormInputs {
-  email: string;
-  password: string;
-}
-
-const LoginPage: React.FC = () => {
-
-  const handleLoginSuccess = (data: LoginFormInputs) => {
-    console.log('Login successful:', data);
-    
-  };
-
-  // Handle login errors
-  const handleLoginError = (error: unknown) => {
-    console.error('Login error:', error);
-    // Handle errors, display notifications, etc.
-  };
+export default function LoginForm() {
 
   return (
-    <div className="min-h-screen bg-[#1E1E1E] flex items-center justify-center px-4 py-12 relative">
+     <div className="min-h-screen bg-[#1E1E1E] flex items-center justify-center px-4 py-12 relative">
       {/* Background gradients */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-[#9000FF] rounded-full opacity-20 blur-3xl -translate-y-1/4 translate-x-1/4"></div>
@@ -42,14 +25,22 @@ const LoginPage: React.FC = () => {
 
           <h2 className="text-xl font-semibold text-white text-center mb-6">Sign in to your account</h2>
 
-          <LoginForm 
-            onSuccess={handleLoginSuccess}
-            onError={handleLoginError}
-          />
+          <GoogleLoginButton/>
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <Separator className="w-full" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">
+                Or 
+              </span>
+            </div>
+        </div>
+          <div className="text-center">
+            <p className="text-sm text-red-400">Ask the admin to register if not registered previously</p>
+          </div>
         </div>
       </div>
     </div>
   );
-};
-
-export default LoginPage;
+}
