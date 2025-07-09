@@ -1,36 +1,131 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Getting Started
 
-First, run the development server:
+
+
+# Excellence Frontend
+
+**Excellence** is a centralized academic platform built for teachers to manage student records, batch-wise semester results, and subject-specific mark details. Built using **Next.js**, **TypeScript**, **Tailwind CSS**, **Motion** and **Shadcn UI**, this frontend connects seamlessly with a powerful backend to deliver efficient and intuitive academic data management.
+
+---
+
+## Features
+
+- Teacher Dashboard to view, add, and manage students
+- Batch-wise semester and subject result storage
+- Responsive tables and input forms for fast entry
+- Clean, modern UI using Shadcn and Tailwind
+- Fast navigation and optimized routing with Next.js App Router
+
+---
+
+## Tech Stack
+
+| Technology      | Purpose                              |
+|----------------|---------------------------------------|
+| Next.js         | React framework (App Router enabled) |
+| TypeScript      | Type-safe frontend development        |
+| Tailwind CSS    | Utility-first CSS framework           |
+| Shadcn UI       | Accessible, reusable UI components    |
+| Lucide Icons    | Lightweight icon set                  |
+| Motion          | For Animation purpose                  |
+
+
+## Project Structure
+
+```txt
+excellence-frontend/
+├── app/                     # App directory (routing and pages)
+│   └── (routes)/            # Feature-specific routes
+├── components/              # UI components (tables, forms)
+├── lib/                     # Utility functions and helpers
+├── styles/                  # Global styles
+├── public/                  # Static assets
+├── tailwind.config.ts       # Tailwind config
+└── tsconfig.json            # TypeScript config
+```
+
+## Installation & Setup
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/EpicAryan/excellence-frontend.git
+cd excellence-frontend
+````
+
+### 2. Install Dependencies
+
+```bash
+npm install
+# or
+yarn install
+```
+
+### 3. Set Up Environment Variables
+
+Create a `.env.local` file in the root:
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:3001
+```
+
+> Replace the value with your backend server's actual URL.
+
+---
+
+## Running the Application
+
+### Development
 
 ```bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Visit: [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Production
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm start
+# or
+yarn build
+yarn start
+```
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## Customization
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+* UI built with Shadcn: Customize in `components/ui/`
+* Add new routes or pages inside `app/`
+* Style overrides in `tailwind.config.ts` or `globals.css`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 🔗 Backend Integration
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+This project expects an API server running at the specified `NEXT_PUBLIC_API_URL`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Backend capabilities (assumed from context):
+
+* User login/auth
+* Student creation and editing
+* Batch and semester data management
+* Result storage by subject
+
+Ensure backend CORS and API endpoints are properly configured.
+
+---
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
+
+
+Built with care by [Aryan Kumar](https://github.com/EpicAryan)
+
+```
+
