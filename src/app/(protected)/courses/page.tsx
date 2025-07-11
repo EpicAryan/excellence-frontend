@@ -5,10 +5,19 @@ import { getStudentCourse } from "@/app/actions/students.actions";
 import { ClassCard } from "@/components/CourseSection/classCard";
 import { useUser } from "@/hooks/useUser";
 import { Loader2 } from "lucide-react";
+import PopUpCard from "@/components/popUpCard";
+import { useEffect, useState } from "react";
 
 export default function CoursePage() {
   const { data: user, isLoading: isUserLoading } = useUser();
-  
+  const [showDisclaimer, setShowDisclaimer] = useState(false);
+
+   useEffect(() => {
+    if (user?.id) {
+      setShowDisclaimer(true); 
+    }
+  }, [user?.id]);
+
   const { data: userClasses, isLoading } = useQuery({
     queryKey: ["userCourse", user?.id],
     queryFn: () => getStudentCourse(user?.id),
@@ -34,27 +43,32 @@ export default function CoursePage() {
       </div>
     );
   }
-
+    
   return (
-    <div className="container mx-auto p-6">
-      <div className="text-center">
-        <h1 className="text-3xl font-bold mb-8 bg-gradient-to-r from-purple-600 via-purple-500 to-pink-500 bg-clip-text text-transparent inline-block">
-          My Courses
-        </h1>
+    <>
+     <PopUpCard open={showDisclaimer} setOpen={setShowDisclaimer} />
+      <div className="container mx-auto p-6">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold mb-8 bg-gradient-to-r from-purple-600 via-purple-500 to-pink-500 bg-clip-text text-transparent inline-block">
+            My Courses
+          </h1>
+        </div>
+
+        
+        <div className="space-y-8">
+          {userClasses.map((classItem) => (
+            <ClassCard
+              key={classItem.classId}
+              classId={classItem.classId}
+              className={classItem.className}
+              board={classItem.board}
+              subjects={classItem.subjects}
+            />
+          ))}
+        </div>
+
       </div>
 
-      
-      <div className="space-y-8">
-        {userClasses.map((classItem) => (
-          <ClassCard
-            key={classItem.classId}
-            classId={classItem.classId}
-            className={classItem.className}
-            board={classItem.board}
-            subjects={classItem.subjects}
-          />
-        ))}
-      </div>
-    </div>
+    </>
   );
 }
