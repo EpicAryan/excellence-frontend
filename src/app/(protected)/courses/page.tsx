@@ -10,13 +10,29 @@ import { useEffect, useState } from "react";
 
 export default function CoursePage() {
   const { data: user, isLoading: isUserLoading } = useUser();
-  const [showDisclaimer, setShowDisclaimer] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
 
    useEffect(() => {
-    if (user?.id) {
-      setShowDisclaimer(true); 
+    if(typeof window !== 'undefined'){
+      const seenDisclaimer = sessionStorage.getItem("seenDisclaimer");
+      if(!seenDisclaimer){
+        const timer = setTimeout(() => {
+          setIsVisible(true);
+        }, 500);
+        return () => clearTimeout(timer);
+      }else {
+        sessionStorage.setItem("seenDisclaimerClosed", "true");
+      }
     }
-  }, [user?.id]);
+  }, [])
+
+  const closeDisclaimer = () => {
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("seenDisclaimer", "true");
+      sessionStorage.setItem("seenDisclaimerClosed", "true");
+    }
+    setIsVisible(false);
+  };
 
   const { data: userClasses, isLoading } = useQuery({
     queryKey: ["userCourse", user?.id],
@@ -46,7 +62,7 @@ export default function CoursePage() {
     
   return (
     <>
-     <PopUpCard open={showDisclaimer} setOpen={setShowDisclaimer} />
+     <PopUpCard open={isVisible} setOpen={closeDisclaimer} />
       <div className="container mx-auto p-6">
         <div className="text-center">
           <h1 className="text-3xl font-bold mb-8 bg-gradient-to-r from-purple-600 via-purple-500 to-pink-500 bg-clip-text text-transparent inline-block">

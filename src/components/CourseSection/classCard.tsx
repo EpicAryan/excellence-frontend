@@ -42,7 +42,7 @@ export const ClassCard = ({ classId, className, board, subjects }: ClassCardProp
                 onClick={() => navigateToSubject(subject.subjectId)}
                 className="flex items-center gap-3 p-3 bg-[#2B2B2B] 
                         rounded-md cursor-pointer hover:bg-[#6544A3]/60 
-                        hover:text-white transition-all duration-300 group active:scale-105"
+                        hover:text-white transition-all duration-300 group active:scale-105  hover:scale-[101%]"
             >
                 <div className="p-2 bg-[#8D6CCB] rounded-full group-hover:bg-white">
                 <BookOpen className="h-4 w-4 text-white group-hover:text-[#8D6CCB]" />

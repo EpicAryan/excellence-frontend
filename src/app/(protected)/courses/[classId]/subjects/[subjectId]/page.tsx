@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
@@ -9,10 +9,16 @@ import { useUser } from "@/hooks/useUser";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ChapterCard from '@/components/CourseSection/chapterCard';
+import { Chapter } from '@/types/studentNotes';
+import TopicsDialog from '@/components/CourseSection/topicsDialog';
+import { motion } from 'motion/react'
 
 const SubjectPage = () => {
   const router = useRouter();
   const params = useParams();
+  const [selectedChapter, setSelectedChapter] = useState<Chapter | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
   const classId = Number(params.classId);
   const subjectId = Number(params.subjectId);
 
@@ -68,16 +74,33 @@ const SubjectPage = () => {
         </h1>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 " style={{gridAutoFlow: 'row dense'}}>
         {currentSubject.chapters.map((chapter) => (
           <ChapterCard 
             key={chapter.chapterId}
             chapter={chapter}
-            classId={classId}
-            subjectId={subjectId}
+            onClick={() => {
+              setSelectedChapter(chapter);
+              setIsDialogOpen(true);
+            }}
           />
         ))}
       </div>
+      {selectedChapter && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
+        >
+          <TopicsDialog 
+            isOpen={isDialogOpen}
+            setIsOpen={setIsDialogOpen}
+            chapter={selectedChapter}
+            classId={classId}
+            subjectId={subjectId}
+          />
+        </motion.div>
+      )}
     </div>
   );
 };

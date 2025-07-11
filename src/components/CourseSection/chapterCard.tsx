@@ -1,28 +1,19 @@
 'use client';
 
-import React, { useState } from 'react';
 import { BookOpen } from 'lucide-react';
-import TopicsDialog from './topicsDialog';
 import { Chapter } from '@/types/studentNotes'
-import {motion} from 'motion/react'
 
 interface ChapterCardProps {
   chapter: Chapter;
-  classId: number;
-  subjectId: number;
+  onClick: () => void;
 }
 
-export const ChapterCard = ({ chapter, classId, subjectId }: ChapterCardProps) => {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+export const ChapterCard = ({ chapter, onClick }: ChapterCardProps) => {
 
   return (
     <>
       <div
-        onClick={() => {
-          setTimeout(() => {
-            setIsDialogOpen(true);
-          },200);
-        }}
+        onClick={onClick}
         className="flex items-center gap-3 p-4 bg-[#1E1E1E] border border-[#8D6CCB]/20
                 rounded-lg cursor-pointer hover:bg-[#6544A3]/60 
                 hover:text-white transition-all duration-300 group active:scale-110"
@@ -39,20 +30,6 @@ export const ChapterCard = ({ chapter, classId, subjectId }: ChapterCardProps) =
           </span>
         </div>
       </div>
-      <motion.div
-        initial={{opacity: 0, scale: 0
-        }}
-        animate={{opacity: 1, scale: 1}}
-        transition={{ duration: 0.3, ease: "easeInOut"}}
-      >
-        <TopicsDialog 
-          isOpen={isDialogOpen}
-          setIsOpen={setIsDialogOpen}
-          chapter={chapter}
-          classId={classId}
-          subjectId={subjectId}
-        />
-      </motion.div>
     </>
   );
 };

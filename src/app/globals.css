@@ -180,3 +180,7 @@ body {
 .nav-link:hover::after {
   width: 100%;
 }
+
+::-webkit-scrollbar {
+ display: none;
+}

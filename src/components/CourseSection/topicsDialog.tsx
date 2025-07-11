@@ -25,10 +25,10 @@ const TopicsDialog = ({ isOpen, setIsOpen, chapter, classId, subjectId }: Topics
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="bg-[#1E1E1E] text-white border-[#8D6CCB]">
+      <DialogContent className="bg-[#1E1E1E] text-white border-[#8D6CCB] overflow-y-auto max-h-[90%] md:max-h-[60%]">
         <DialogHeader>
-          <DialogTitle className="text-xl bg-gradient-to-r from-purple-600 via-purple-500 to-pink-500 bg-clip-text text-transparent inline-block">
-            {chapter.chapterName}
+          <DialogTitle className="flex justify-between items-center text-xl bg-gradient-to-r from-purple-600 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+            {chapter.chapterName} <span className='text-xs text-gray-400'>Scroll to view more</span>
           </DialogTitle>
         </DialogHeader>
         
